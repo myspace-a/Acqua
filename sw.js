@@ -1,7 +1,16 @@
-const CACHE_NAME = 'tracker-acqua-v1';
+const CACHE_NAME = 'tracker-acqua-v2';
 const ASSETS = [
+  './',
   './index.html',
-  './manifest.json'
+  './style.css',
+  './js/storage.js',
+  './js/water.js',
+  './js/backup.js',
+  './js/main.js',
+  './lib/xlsx.full.min.js',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 // Installa e metti in cache i file
