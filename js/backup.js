@@ -1,153 +1,250 @@
 // backup.js — esportazione e importazione Excel (usa la libreria XLSX in lib/).
 
-// Converte "lunedì 16 marzo 2026" → "2026-03-16"
+const VALID_SIZES = [100, 150, 200, 250, 300, 350, 400, 500];
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
+const MAX_IMPORT_ROWS = 10000;
+const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
 function parseDateKey(formatted) {
-  try {
-    const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
-    const parts = formatted.toLowerCase().replace(/[,]/g,'').split(' ').filter(p => p.trim());
-    // cerca numero giorno, mese testuale, anno
-    let day, month, year;
-    for (let i = 0; i < parts.length; i++) {
-      const n = parseInt(parts[i]);
-      if (!isNaN(n) && n >= 1 && n <= 31 && !day) day = n;
-      else if (!isNaN(n) && n >= 2000) year = n;
-      else {
-        const mi = months.indexOf(parts[i]);
-        if (mi !== -1) month = mi + 1;
-      }
+  if (formatted === null || formatted === undefined || formatted === '') return null;
+  const value = String(formatted).trim();
+
+  // Formato ISO YYYY-MM-DD.
+  let match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (match) return validDateKey(Number(match[1]), Number(match[2]), Number(match[3]));
+
+  // Formati numerici italiani comuni: DD/MM/YYYY e DD-MM-YYYY.
+  match = value.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (match) return validDateKey(Number(match[3]), Number(match[2]), Number(match[1]));
+
+  // Formato italiano usato nei backup esistenti: "lunedì 16 marzo 2026".
+  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const parts = value.toLowerCase().replace(/[,]/g,'').split(/\s+/).filter(Boolean);
+  let day, month, year;
+  for (const part of parts) {
+    const number = Number(part);
+    if (/^\d+$/.test(part) && number >= 1 && number <= 31 && !day) day = number;
+    else if (/^\d{4}$/.test(part) && number >= 2000 && number <= 9999) year = number;
+    else {
+      const monthIndex = months.indexOf(part);
+      if (monthIndex !== -1) month = monthIndex + 1;
     }
-    if (day && month && year) {
-      return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    }
-  } catch {}
+  }
+  if (day && month && year) return validDateKey(year, month, day);
   return null;
 }
 
-// ── EXPORT ──
-function exportExcel() {
-  const sorted = Object.keys(data).sort((a,b) => b.localeCompare(a));
-  const rows = [];
-  sorted.forEach(date => {
-    const entries = (data[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
-    entries.forEach(e => {
-      rows.push({
-        'Data': formatDate(date),
-        'Orario': e.time,
-        'Bicchieri': e.qty,
-        'Dimensione (ml)': e.size,
-        'Totale assunzione (ml)': e.size * e.qty,
-        'Nota': e.note || '',
-      });
-    });
-    rows.push({ 'Data': '', 'Orario': '', 'Bicchieri': '', 'Dimensione (ml)': 'TOTALE GIORNO', 'Totale assunzione (ml)': calcTotal(entries), 'Nota': '' });
-    rows.push({});
-  });
-  const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:32},{wch:10},{wch:10},{wch:16},{wch:22},{wch:30}];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Idratazione');
-  XLSX.writeFile(wb, 'acqua-backup.xlsx');
-  showToast('✅ Esportazione completata!');
+function validDateKey(year, month, day) {
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
 
-// ── IMPORT ──
-const VALID_SIZES = [100, 150, 200, 250, 300, 350, 400, 500];
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB max
-const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
+function excelDateToKey(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const date = XLSX.SSF.parse_date_code(value);
+    if (date && date.y && date.m && date.d) return validDateKey(date.y, date.m, date.d);
+  }
+  return parseDateKey(value);
+}
+
+function exportExcel() {
+  const waterRows = [];
+  const waterDates = Object.keys(data).sort((a,b) => b.localeCompare(a));
+
+  waterDates.forEach(date => {
+    const entries = (data[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
+    entries.forEach(entry => {
+      waterRows.push({
+        'Data': formatDate(date),
+        'Orario': entry.time,
+        'Bicchieri': entry.qty,
+        'Dimensione (ml)': entry.size,
+        'Totale assunzione (ml)': entry.size * entry.qty,
+        'Nota': entry.note || '',
+      });
+    });
+    waterRows.push({ 'Data': '', 'Orario': '', 'Bicchieri': '', 'Dimensione (ml)': 'TOTALE GIORNO', 'Totale assunzione (ml)': calcTotal(entries), 'Nota': '' });
+    waterRows.push({});
+  });
+
+  const toiletRows = [];
+  const toiletDates = Object.keys(toiletData).sort((a,b) => b.localeCompare(a));
+  toiletDates.forEach(date => {
+    const visits = (toiletData[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
+    visits.forEach(visit => {
+      toiletRows.push({
+        'Data': formatDate(date),
+        'Orario': visit.time,
+        'Durata (secondi)': visit.duration === null || visit.duration === undefined ? '' : visit.duration,
+      });
+    });
+    toiletRows.push({ 'Data': '', 'Orario': '', 'Durata (secondi)': 'TOTALE GIORNO' });
+    toiletRows.push({});
+  });
+
+  const workbook = XLSX.utils.book_new();
+  const waterSheet = XLSX.utils.json_to_sheet(waterRows);
+  waterSheet['!cols'] = [{wch:32},{wch:10},{wch:10},{wch:16},{wch:22},{wch:30}];
+  XLSX.utils.book_append_sheet(workbook, waterSheet, 'Idratazione');
+
+  const toiletSheet = XLSX.utils.json_to_sheet(toiletRows);
+  toiletSheet['!cols'] = [{wch:32},{wch:10},{wch:20}];
+  XLSX.utils.book_append_sheet(workbook, toiletSheet, 'Bagno');
+
+  XLSX.writeFile(workbook, 'acqua-backup.xlsx');
+  showToast('✅ Esportazione completata!');
+}
 
 function importExcel(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Limite dimensione file
   if (file.size > MAX_FILE_SIZE) {
     showToast('❌ File troppo grande (max 2MB)', 4000);
     event.target.value = '';
     return;
   }
 
-  // Verifica estensione
-  const ext = file.name.split('.').pop().toLowerCase();
-  if (!['xlsx','xls'].includes(ext)) {
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!['xlsx','xls'].includes(extension)) {
     showToast('❌ Formato file non valido', 4000);
     event.target.value = '';
     return;
   }
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function(loadEvent) {
     try {
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      const workbook = XLSX.read(loadEvent.target.result, { type: 'array', cellDates: true });
+      const waterSheet = workbook.Sheets['Idratazione'] ||
+        (workbook.Sheets['Bagno'] ? null : workbook.Sheets[workbook.SheetNames[0]]);
+      const waterRows = waterSheet
+        ? XLSX.utils.sheet_to_json(waterSheet, { defval: '', raw: false })
+        : [];
+      const toiletSheet = workbook.Sheets['Bagno'];
+      const toiletRows = toiletSheet
+        ? XLSX.utils.sheet_to_json(toiletSheet, { defval: '', raw: false })
+        : [];
 
-      // Limite numero righe
-      if (rows.length > 10000) {
-        showToast('❌ File con troppi dati (max 10.000 righe)', 4000);
+      if (waterRows.length + toiletRows.length > MAX_IMPORT_ROWS) {
+        showToast('❌ File con troppe righe (max 10.000)', 4000);
         return;
       }
 
-      let imported = 0;
-      let skipped = 0;
-      let currentDateKey = null;
-
-      rows.forEach(row => {
-        const dataVal = (row['Data'] || '').toString().trim().substring(0, 60);
-        const orario  = (row['Orario'] || '').toString().trim().substring(0, 5);
-        const bicchieri = parseInt(row['Bicchieri']);
-        const dimensione = parseInt(row['Dimensione (ml)']);
-        const nota = (row['Nota'] || '').toString().trim().substring(0, 60); // tronca a 60 chars
-
-        // Riga totale o riga vuota → skip
-        if (!dataVal || row['Dimensione (ml)'] === 'TOTALE GIORNO' || (!orario && !bicchieri)) return;
-
-        // Risolvi la data
-        if (dataVal) {
-          const parsed = parseDateKey(dataVal);
-          if (parsed) currentDateKey = parsed;
-        }
-        if (!currentDateKey) { skipped++; return; }
-
-        // Valida orario con regex HH:MM
-        if (!TIME_REGEX.test(orario)) { skipped++; return; }
-
-        // Valida numeri con limiti sensati
-        if (isNaN(bicchieri) || isNaN(dimensione) ||
-            bicchieri <= 0 || bicchieri > 20 ||
-            !VALID_SIZES.includes(dimensione)) {
-          skipped++;
-          return;
-        }
-
-        // Aggiungi senza duplicati
-        if (!data[currentDateKey]) data[currentDateKey] = [];
-        const exists = data[currentDateKey].some(e =>
-          e.time === orario && e.size === dimensione && e.qty === bicchieri && e.note === nota
-        );
-        if (!exists) {
-          data[currentDateKey].push({ time: orario, size: dimensione, qty: bicchieri, note: nota });
-          imported++;
-        } else {
-          skipped++;
-        }
-      });
+      const waterResult = importWaterRows(waterRows);
+      const toiletResult = importToiletRows(toiletRows);
 
       saveData();
+      saveToiletData();
       render();
-
-      // Reset input per poter reimportare lo stesso file
       event.target.value = '';
 
+      const imported = waterResult.imported + toiletResult.imported;
+      const skipped = waterResult.skipped + toiletResult.skipped;
       if (imported > 0) {
-        showToast(`✅ Importate ${imported} righe!`, 4000);
+        showToast(`✅ Importati ${imported} record${skipped ? ` · ${skipped} ignorati` : ''}`, 4500);
       } else if (skipped > 0) {
-        showToast(`⚠️ Nessuna riga nuova (${skipped} già presenti o non valide)`, 4000);
+        showToast(`⚠️ Nessun record nuovo · ${skipped} ignorati o già presenti`, 4500);
       } else {
         showToast('⚠️ Nessun dato trovato nel file', 4000);
       }
-    } catch(err) {
+    } catch (error) {
+      event.target.value = '';
       showToast('❌ Errore nella lettura del file', 4000);
     }
   };
+  reader.onerror = function() {
+    event.target.value = '';
+    showToast('❌ Impossibile leggere il file', 4000);
+  };
   reader.readAsArrayBuffer(file);
+}
+
+function importWaterRows(rows) {
+  let imported = 0;
+  let skipped = 0;
+  let currentDateKey = null;
+
+  rows.forEach(row => {
+    const rawDate = (row['Data'] || '').toString().trim().substring(0, 60);
+    const time = (row['Orario'] || '').toString().trim().substring(0, 5);
+    const glasses = parseInt(row['Bicchieri'], 10);
+    const size = parseInt(row['Dimensione (ml)'], 10);
+    const note = (row['Nota'] || '').toString().trim().substring(0, 60);
+
+    if (!rawDate || row['Dimensione (ml)'] === 'TOTALE GIORNO' || (!time && !row['Bicchieri'])) return;
+
+    const parsedDate = excelDateToKey(rawDate);
+    if (parsedDate) currentDateKey = parsedDate;
+    else if (rawDate) { skipped++; return; }
+    if (!currentDateKey) { skipped++; return; }
+
+    if (!TIME_REGEX.test(time) || !Number.isInteger(glasses) || !Number.isInteger(size) ||
+        glasses < 1 || glasses > 20 || !VALID_SIZES.includes(size)) {
+      skipped++;
+      return;
+    }
+
+    if (!data[currentDateKey]) data[currentDateKey] = [];
+    const duplicateIndex = data[currentDateKey].findIndex(entry =>
+      entry.time === time && Number(entry.size) === size && Number(entry.qty) === glasses && (entry.note || '') === note
+    );
+    if (duplicateIndex === -1) {
+      data[currentDateKey].push({ time, size, qty: glasses, note });
+      imported++;
+    } else {
+      skipped++;
+    }
+  });
+
+  return { imported, skipped };
+}
+
+function importToiletRows(rows) {
+  let imported = 0;
+  let skipped = 0;
+  let currentDateKey = null;
+
+  rows.forEach(row => {
+    const rawDate = (row['Data'] || '').toString().trim().substring(0, 60);
+    const time = (row['Orario'] || '').toString().trim();
+    const rawDuration = row['Durata (secondi)'];
+
+    // Righe vuote e righe di riepilogo non rappresentano visite.
+    if (!rawDate && !time && (rawDuration === '' || rawDuration === null || rawDuration === undefined)) return;
+    if (String(rawDuration).toUpperCase().includes('TOTALE')) return;
+
+    const parsedDate = excelDateToKey(rawDate);
+    if (parsedDate) currentDateKey = parsedDate;
+    else { skipped++; return; }
+    if (!TIME_REGEX.test(time)) { skipped++; return; }
+
+    let duration = null;
+    if (rawDuration !== '' && rawDuration !== null && rawDuration !== undefined) {
+      const value = typeof rawDuration === 'number' ? rawDuration : Number(String(rawDuration).trim());
+      if (!Number.isInteger(value) || value < 1 || value > 3600) {
+        skipped++;
+        return;
+      }
+      duration = value;
+    }
+
+    if (!toiletData[currentDateKey]) toiletData[currentDateKey] = [];
+    const duplicate = toiletData[currentDateKey].some(visit => {
+      const existingDuration = visit.duration === null || visit.duration === undefined || visit.duration === ''
+        ? null
+        : Number(visit.duration);
+      return visit.time === time && existingDuration === duration;
+    });
+
+    if (!duplicate) {
+      toiletData[currentDateKey].push({ time, duration });
+      imported++;
+    } else {
+      skipped++;
+    }
+  });
+
+  return { imported, skipped };
 }

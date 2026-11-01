@@ -15,7 +15,6 @@
 </head>
 <body>
 
-<!-- HEADER con icona SVG goccia piena -->
 <div class="header">
   <svg class="header-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -32,49 +31,65 @@
   <p>Tracker idratazione · con orario</p>
 </div>
 
-<!-- DATA -->
 <div class="card">
   <span class="card-label">Giorno selezionato</span>
   <input type="date" id="dateInput" />
   <p class="date-label" id="dateLabel"></p>
 </div>
 
-<!-- AGGIUNGI -->
-<div class="card">
-  <span class="card-label">Aggiungi assunzione</span>
-  <div class="form-grid">
-    <div class="form-field">
-      <label>Orario</label>
-      <input type="time" id="timeInput" />
+<div class="tracking-grid">
+  <div class="card">
+    <span class="card-label">Aggiungi assunzione</span>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="timeInput">Orario</label>
+        <input type="time" id="timeInput" />
+      </div>
+      <div class="form-field">
+        <label for="sizeSelect">Dimensione (ml)</label>
+        <select id="sizeSelect">
+          <option value="100">100 ml</option>
+          <option value="150">150 ml</option>
+          <option value="200" selected>200 ml</option>
+          <option value="250">250 ml</option>
+          <option value="300">300 ml</option>
+          <option value="350">350 ml</option>
+          <option value="400">400 ml</option>
+          <option value="500">500 ml</option>
+        </select>
+      </div>
     </div>
-    <div class="form-field">
-      <label>Dimensione (ml)</label>
-      <select id="sizeSelect">
-        <option value="100">100 ml</option>
-        <option value="150">150 ml</option>
-        <option value="200" selected>200 ml</option>
-        <option value="250">250 ml</option>
-        <option value="300">300 ml</option>
-        <option value="350">350 ml</option>
-        <option value="400">400 ml</option>
-        <option value="500">500 ml</option>
-      </select>
+    <div class="form-field qty-field">
+      <label>Numero bicchieri</label>
+      <div class="qty-row">
+        <button class="qty-btn" id="qtyMinus" type="button">−</button>
+        <span class="qty-num" id="qtyNum">1</span>
+        <button class="qty-btn" id="qtyPlus" type="button">+</button>
+        <span class="qty-ml" id="qtyMl">= 200 ml</span>
+      </div>
     </div>
+    <input class="note-input" type="text" id="noteInput" placeholder="Nota opzionale (es. dopo allenamento)..." maxlength="60" />
+    <button class="add-btn" id="addBtn" type="button">+ Aggiungi</button>
   </div>
-  <div class="form-field" style="margin-bottom:10px;">
-    <label>Numero bicchieri</label>
-    <div class="qty-row">
-      <button class="qty-btn" id="qtyMinus">−</button>
-      <span class="qty-num" id="qtyNum">1</span>
-      <button class="qty-btn" id="qtyPlus">+</button>
-      <span style="font-size:13px;color:#64748b;margin-left:4px;" id="qtyMl">= 200 ml</span>
+
+  <div class="card toilet-card">
+    <span class="card-label">Bagno</span>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="toiletTimeInput">Orario</label>
+        <input type="time" id="toiletTimeInput" required />
+      </div>
+      <div class="form-field">
+        <label for="toiletDurationInput">Durata (secondi)</label>
+        <input class="duration-input" type="number" id="toiletDurationInput"
+          min="1" max="3600" step="1" inputmode="numeric" placeholder="Facoltativa" />
+      </div>
     </div>
+    <p class="field-hint">La durata è facoltativa. Se vuota, viene conteggiata come 0 secondi.</p>
+    <button class="add-btn toilet-add-btn" id="addToiletBtn" type="button">+ Registra visita</button>
   </div>
-  <input class="note-input" type="text" id="noteInput" placeholder="Nota opzionale (es. dopo allenamento)..." maxlength="60" />
-  <button class="add-btn" id="addBtn">+ Aggiungi</button>
 </div>
 
-<!-- TIMELINE -->
 <div class="card">
   <span class="card-label">Timeline del giorno</span>
   <div class="timeline" id="timeline">
@@ -82,11 +97,10 @@
   </div>
 </div>
 
-<!-- PROGRESSO -->
 <div class="card">
   <div class="progress-header">
     <span>Totale giornaliero</span>
-    <span id="progressText" style="font-weight:700;color:#e2e8f0;"></span>
+    <span id="progressText" class="progress-text"></span>
   </div>
   <div class="progress-bar-bg">
     <div class="progress-bar-fill" id="progressFill"></div>
@@ -100,29 +114,38 @@
   </div>
 </div>
 
-<!-- STORICO -->
-<button class="toggle-btn" id="toggleBtn">▼ Mostra storico</button>
+<div class="card">
+  <span class="card-label">Visite in bagno</span>
+  <div class="timeline toilet-timeline" id="toiletTimeline">
+    <div class="empty-timeline">Nessuna visita registrata</div>
+  </div>
+  <div class="toilet-stats">
+    <div class="stat-box"><div class="stat-value" id="toiletStatVisits">0</div><div class="stat-label">Visite</div></div>
+    <div class="stat-box"><div class="stat-value" id="toiletStatDuration">0</div><div class="stat-label">Secondi totali</div></div>
+  </div>
+</div>
+
+<button class="toggle-btn" id="toggleBtn" type="button">▼ Mostra storico</button>
 <div id="history-section">
-  <div class="card" style="padding:0;overflow:hidden;">
+  <div class="card history-card">
     <div id="historyList"></div>
   </div>
 </div>
 
-<!-- EXPORT / IMPORT -->
 <div class="btn-row" id="exportRow" style="display:none;">
-  <button class="export-btn" id="exportBtn">📥 Esporta Excel</button>
-  <button class="import-btn" id="importBtnMain">📤 Importa Excel</button>
+  <button class="export-btn" id="exportBtn" type="button">📥 Esporta Excel</button>
+  <button class="import-btn" id="importBtnMain" type="button">📤 Importa Excel</button>
 </div>
-<div id="importOnlyRow" style="margin-top:4px;">
-  <button class="import-btn" id="importBtnOnly" style="width:100%;padding:16px;">📤 Importa Excel</button>
+<div id="importOnlyRow" class="import-only-row">
+  <button class="import-btn" id="importBtnOnly" type="button">📤 Importa Excel</button>
 </div>
 
 <input type="file" id="importFileInput" accept=".xlsx,.xls" />
-
 <div class="toast" id="toast"></div>
 
 <script src="js/storage.js"></script>
 <script src="js/water.js"></script>
+<script src="js/toilet.js"></script>
 <script src="js/backup.js"></script>
 <script src="js/main.js"></script>
 </body>
