@@ -25,7 +25,7 @@ function getNowTime() {
 }
 function formatDate(dateKey) {
   const [y,m,d] = dateKey.split('-');
-  return new Date(y,m-1,d).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return new Date(Number(y),Number(m)-1,Number(d)).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
 
 function getDayEntries() {
@@ -40,12 +40,12 @@ function changeQty(delta) {
   updateQtyMl();
 }
 function updateQtyMl() {
-  const size = parseInt(document.getElementById('sizeSelect').value);
+  const size = parseInt(document.getElementById('sizeSelect').value, 10);
   document.getElementById('qtyMl').textContent = `= ${size * formQty} ml`;
 }
 function addEntry() {
   const time = document.getElementById('timeInput').value;
-  const size = parseInt(document.getElementById('sizeSelect').value);
+  const size = parseInt(document.getElementById('sizeSelect').value, 10);
   const note = document.getElementById('noteInput').value.trim();
   if (!time) { alert("Inserisci l'orario!"); return; }
   if (!data[selectedDate]) data[selectedDate] = [];
@@ -67,6 +67,7 @@ function deleteEntry(index) {
 function render() {
   renderTimeline();
   renderProgress();
+  renderToilet();
   renderHistory();
   updateBtns();
 }
@@ -80,12 +81,12 @@ function renderTimeline() {
   tl.innerHTML = entries.map((e, i) => `
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <button class="tl-delete" data-index="${i}">✕</button>
+      <button class="tl-delete" data-index="${i}" aria-label="Elimina assunzione">✕</button>
       <div class="tl-header">
-        <div class="tl-time">${e.time}</div>
+        <div class="tl-time">${sanitize(e.time)}</div>
         <div class="tl-right">
-          <div class="tl-ml">${e.size * e.qty} ml</div>
-          <div class="tl-detail">${e.qty} × ${e.size} ml</div>
+          <div class="tl-ml">${Number(e.size) * Number(e.qty)} ml</div>
+          <div class="tl-detail">${Number(e.qty)} × ${Number(e.size)} ml</div>
         </div>
       </div>
       ${e.note ? `<div class="tl-note">📝 ${sanitize(e.note)}</div>` : ''}
@@ -104,39 +105,43 @@ function renderProgress() {
   document.getElementById('progressStatus').textContent = pct >= 100
     ? '🎉 Obiettivo raggiunto!'
     : `${Math.round(pct)}% dell'obiettivo (${GOAL} ml)`;
-  const totalGlasses = entries.reduce((s,e) => s + e.qty, 0);
+  const totalGlasses = entries.reduce((s,e) => s + Number(e.qty), 0);
   document.getElementById('statEntries').textContent = entries.length;
   document.getElementById('statGlasses').textContent = totalGlasses;
   document.getElementById('statFirst').textContent = entries.length ? entries[0].time : '—';
   document.getElementById('statLast').textContent = entries.length ? entries[entries.length-1].time : '—';
 }
 function renderHistory() {
-  const sorted = Object.keys(data).sort((a,b) => b.localeCompare(a));
+  const dates = [...new Set([...Object.keys(data), ...Object.keys(toiletData)])].sort((a,b) => b.localeCompare(a));
   const list = document.getElementById('historyList');
-  if (!sorted.length) { list.innerHTML = ''; return; }
-  list.innerHTML = sorted.map(date => {
-    const entries = (data[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
-    const total = calcTotal(entries);
-    const color = total >= GOAL ? '#34d399' : '#94a3b8';
-    const detail = `${entries.length} assunzioni · ${entries.reduce((s,e)=>s+e.qty,0)} bicchieri`;
-    return `<div class="history-item ${date === selectedDate ? 'selected' : ''}" data-date="${date}">
+  if (!dates.length) { list.innerHTML = ''; return; }
+  list.innerHTML = dates.map(date => {
+    const entries = (data[date] || []).slice();
+    const waterTotal = calcTotal(entries);
+    const visits = (toiletData[date] || []);
+    const toiletSeconds = visits.reduce((sum, visit) => sum + (Number(visit.duration) || 0), 0);
+    const color = waterTotal >= GOAL ? '#34d399' : '#94a3b8';
+    const detail = `${entries.length} assunzioni · ${entries.reduce((s,e)=>s+Number(e.qty),0)} bicchieri<br>${visits.length} visite bagno · ${toiletSeconds} secondi`;
+    return `<div class="history-item ${date === selectedDate ? 'selected' : ''}" data-date="${sanitize(date)}">
       <div class="history-top">
-        <div class="history-date">${formatDate(date)}</div>
-        <div class="history-total" style="color:${color}">${total} ml</div>
+        <div class="history-date">${sanitize(formatDate(date))}</div>
+        <div class="history-total" style="color:${color}">${waterTotal} ml</div>
       </div>
       <div class="history-detail">${detail}</div>
     </div>`;
   }).join('');
 }
 function updateBtns() {
-  const has = Object.keys(data).length > 0;
+  const has = Object.keys(data).length > 0 || Object.keys(toiletData).length > 0;
   document.getElementById('exportRow').style.display = has ? 'grid' : 'none';
   document.getElementById('importOnlyRow').style.display = has ? 'none' : 'block';
 }
 function selectDay(date) {
+  if (!date) return;
   selectedDate = date;
   document.getElementById('dateInput').value = date;
   document.getElementById('dateLabel').textContent = formatDate(date);
+  document.getElementById('toiletTimeInput').value = getNowTime();
   render();
 }
 function toggleHistory() {

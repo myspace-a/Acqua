@@ -25,13 +25,15 @@ body {
   letter-spacing: 3px; text-transform: uppercase;
   display: block; margin-bottom: 14px;
 }
-input[type="date"], input[type="time"] {
+input[type="date"], input[type="time"], .duration-input {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(125,211,252,0.25);
   border-radius: 10px; color: #e2e8f0;
   padding: 10px 14px; font-size: 15px; outline: none; width: 100%;
 }
 .date-label { font-size: 13px; color: #64748b; margin-top: 8px; }
+.tracking-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.tracking-grid > .card { margin-bottom: 16px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 .form-field label {
   font-size: 11px; color: #94a3b8;
@@ -44,6 +46,7 @@ select {
   border-radius: 10px; color: #e2e8f0;
   padding: 10px 14px; font-size: 15px; outline: none; appearance: none;
 }
+.qty-field { margin-bottom: 14px; }
 .qty-row { display: flex; align-items: center; gap: 10px; }
 .qty-btn {
   width: 36px; height: 36px; border-radius: 50%;
@@ -53,6 +56,7 @@ select {
   align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
 }
 .qty-num { font-size: 22px; font-weight: 800; color: #7dd3fc; min-width: 32px; text-align: center; }
+.qty-ml { font-size: 13px; color: #64748b; margin-left: 4px; }
 .note-input {
   width: 100%; background: rgba(255,255,255,0.07);
   border: 1px solid rgba(125,211,252,0.25);
@@ -60,7 +64,7 @@ select {
   padding: 10px 14px; font-size: 14px; outline: none;
   margin-bottom: 14px; font-family: inherit;
 }
-.note-input::placeholder { color: #475569; }
+.note-input::placeholder, .duration-input::placeholder { color: #64748b; }
 .add-btn {
   width: 100%; padding: 14px;
   background: linear-gradient(135deg, #1d4ed8, #3b82f6);
@@ -69,6 +73,12 @@ select {
   box-shadow: 0 4px 16px rgba(59,130,246,0.35); transition: opacity 0.2s;
 }
 .add-btn:active { opacity: 0.8; }
+.toilet-card { border-color: rgba(52,211,153,0.2); }
+.toilet-card .card-label { color: #6ee7b7; }
+.toilet-dot { background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.45); }
+.toilet-time { color: #6ee7b7; }
+.toilet-add-btn { background: linear-gradient(135deg, #047857, #10b981); box-shadow: 0 4px 16px rgba(16,185,129,0.25); }
+.field-hint { color: #64748b; font-size: 12px; line-height: 1.4; margin: -4px 0 14px; }
 .timeline { position: relative; padding-left: 20px; }
 .timeline::before {
   content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
@@ -101,12 +111,14 @@ select {
 }
 .empty-timeline { text-align: center; color: #475569; font-size: 14px; padding: 20px 0; }
 .progress-header { display: flex; justify-content: space-between; font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
+.progress-text { font-weight: 700; color: #e2e8f0; }
 .progress-bar-bg { background: rgba(255,255,255,0.07); border-radius: 100px; height: 14px; overflow: hidden; }
 .progress-bar-fill { height: 100%; border-radius: 100px; transition: width 0.4s ease; }
 .progress-status { text-align: right; font-size: 13px; margin-top: 6px; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
+.stats-grid, .toilet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
 .stat-box { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.07); }
 .stat-value { font-size: 22px; font-weight: 800; color: #7dd3fc; }
+.toilet-stats .stat-value { color: #6ee7b7; }
 .stat-label { font-size: 11px; color: #64748b; margin-top: 2px; letter-spacing: 1px; }
 .toggle-btn {
   width: 100%; padding: 14px;
@@ -120,7 +132,7 @@ select {
 .history-top { display: flex; justify-content: space-between; align-items: center; }
 .history-date { font-size: 14px; color: #e2e8f0; }
 .history-total { font-size: 15px; font-weight: 700; }
-.history-detail { font-size: 12px; color: #64748b; margin-top: 3px; }
+.history-detail { font-size: 12px; color: #64748b; margin-top: 3px; line-height: 1.5; }
 .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
 .export-btn {
   width: 100%; padding: 16px;
@@ -136,6 +148,8 @@ select {
   font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 1px;
   box-shadow: 0 4px 20px rgba(52,211,153,0.35);
 }
+.import-only-row { margin-top: 4px; }
+.import-only-row .import-btn { width: 100%; padding: 16px; }
 /* Toast */
 .toast {
   position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -147,3 +161,11 @@ select {
 .toast.show { opacity: 1; }
 #history-section { display: none; }
 #importFileInput { display: none; }
+@media (max-width: 720px) {
+  .tracking-grid { grid-template-columns: 1fr; gap: 0; }
+  .tracking-grid > .card { margin-bottom: 16px; }
+}
+@media (max-width: 420px) {
+  body { padding-left: 12px; padding-right: 12px; }
+  .form-grid { grid-template-columns: 1fr; }
+}
