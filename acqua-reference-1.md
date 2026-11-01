@@ -16,21 +16,27 @@ Update the **Change log** at the end of every finished step.
 - `manifest.json`, `sw.js`, `icon-192.png`, `icon-512.png`
 - Excel library loaded from cdnjs (SheetJS 0.18.5)
 
-**Current structure (after step 1)**
+**Current structure (after steps 1 and 2)**
 - `index.html` (structure only)
 - `style.css`
 - `js/storage.js` (load/save data, the only file that touches localStorage)
 - `js/water.js` (add/delete/render water entries, progress, history)
+- `js/toilet.js` (add/delete/render toilet visits)
 - `js/backup.js` (Excel export/import)
 - `js/main.js` (startup and button wiring)
 - `lib/xlsx.full.min.js` (local copy of SheetJS 0.18.5, so export/import work offline)
-- `manifest.json`, `sw.js`, icons (unchanged apart from `sw.js` updates below)
+- `manifest.json`, `sw.js`, icons (`sw.js` is now at `tracker-acqua-v3`)
 
 **Status of step 1: DONE (confirmed by the owner, 2026-10-18)**
 - `index.html` is now structure only (about 119 lines), with `style.css`, `js/` and `lib/` complete.
 - `sw.js` is at `tracker-acqua-v2` and the app still works.
 - `js/utils.js` was proposed but NOT created: it is not part of the structure. The shared helpers (`sanitize`, `showToast`, `getTodayKey`, `getNowTime`, `formatDate`) live in `js/water.js` (confirmed by the owner).
 - This is the baseline for step 2. File contents were not re-checked by Claude (GitHub reads were cached); the owner confirmed the state.
+
+**Status of step 2: DONE (implemented, tested in the browser including offline operation, and merged into `main` through PR #5)**
+- The Bagno card and visit timeline are implemented; toilet data is stored separately from water data.
+- Excel backup includes water and toilet data on separate sheets, and import handles both.
+- The service worker cache is `tracker-acqua-v3` and includes `js/toilet.js`.
 
 ## 3. Current functional requirements (water)
 
@@ -69,7 +75,7 @@ Update the **Change log** at the end of every finished step.
 - Validation on all imported data.
 - No external data transmission: all data stays on the device.
 
-## 4. Planned requirements: toilet visits (step 2)
+## 4. Toilet visits (step 2 — implemented)
 - New **"Toilet" card** next to the water card.
 - Fields: **time** (required, prefilled with now) and **duration in seconds** (optional). **No notes.**
 - Day view: timeline of visits (time, duration if entered, delete button), **daily visit count** and **total seconds** (visits without duration add 0 seconds).
@@ -77,24 +83,25 @@ Update the **Change log** at the end of every finished step.
 - Backup: toilet visits included in Excel export (second sheet) and import (same validation and no-duplicates rules).
 - Stored separately from water data. Existing water data must stay untouched.
 
-**Implementation notes for step 2 (suggested, to confirm in the build chat)**
-- New file `js/toilet.js` for toilet add/delete/render; it reuses the helpers in `js/water.js`.
-- Separate localStorage key for toilet data (for example `toilet-tracker-v1`), same shape as water: entries grouped by date. Water key untouched.
-- Duration: optional whole number of seconds (suggested limit 1 to 3600).
-- History list and the export/import button visibility must also consider days that have only toilet visits.
-- Excel: second sheet (for example "Bagno") with Data, Orario, Durata (secondi); import must skip total rows and duplicates.
-- Release: `sw.js` to `tracker-acqua-v3`, add `js/toilet.js` to the cache list.
+**Implementation details**
+- `js/toilet.js` handles adding, deleting, and rendering visits, using shared helpers from `js/water.js`.
+- `js/storage.js` stores visits under the separate `toilet-tracker-v1` localStorage key, grouped by date. The water key and stored water data remain unchanged.
+- Duration is optional; when entered, it must be a whole number from 1 to 3600 seconds. Visits without a duration contribute 0 seconds to the daily total.
+- The history and backup controls include days that have only toilet visits.
+- Excel export uses a second sheet named `Bagno` with Data, Orario, and Durata (secondi). Import validates visits, skips total rows, and avoids duplicate visits.
+- `sw.js` uses `tracker-acqua-v3` and includes `js/toilet.js` in its cache list.
 
 ## 5. Roadmap (one step at a time)
 1. DONE: split `index.html` into several files (no change in look or behavior).
-2. NEXT: toilet feature (section 4).
+2. DONE: toilet visits (section 4), tested in the browser including offline operation and merged into `main` through PR #5.
 3. Back end: **to be defined later.** Open questions: purpose (multi-device, safer backup, sharing), where it is hosted (GitHub Pages is static only), login and privacy, offline behavior, migration of existing browser data.
 
 ## 6. Technical rules
 - localStorage key for water data: `water-tracker-v2-timed`. Data format must not change without a migration, so existing history survives.
-- `sw.js` uses `CACHE_NAME = 'tracker-acqua-v2'` (after step 1) with a cache-first strategy. Next release: bump to `v3` and add any new files to the cache list.
+- `sw.js` uses `CACHE_NAME = 'tracker-acqua-v3'` with a cache-first strategy.
+- Toilet data uses the separate localStorage key `toilet-tracker-v1`; water data remains under `water-tracker-v2-timed` with its existing format.
 - On **every release**: bump the cache version, and make sure every app file is in the cache list.
-- Every release must keep the cache list complete: `./`, `index.html`, `style.css`, all `js/` files, `lib/xlsx.full.min.js`, `manifest.json`, both icons.
+- Every release must keep the cache list complete: `./`, `index.html`, `style.css`, all `js/` files (including `js/toilet.js`), `lib/xlsx.full.min.js`, `manifest.json`, both icons.
 
 ## 7. Working rules
 - One change at a time. Do not mix the split, the toilet feature and the back end.
@@ -103,7 +110,7 @@ Update the **Change log** at the end of every finished step.
 - This requirements chat does not write code; building happens in a separate chat.
 
 ## 8. Test checklist (before and after every release)
-Add a water entry, delete one, change day, open history, export Excel, import Excel, close and reopen the app, open the app offline (airplane mode) including export and import. After the toilet feature, repeat the same for toilet visits.
+Add a water entry, delete one, change day, open history, export Excel, import Excel, close and reopen the app, open the app offline (airplane mode) including export and import. Repeat the same checks for toilet visits. Step 2 was tested successfully in the browser, including offline operation.
 
 ## 9. Decisions on earlier open points
 - Counter behavior: keep the current one (one size plus a number of glasses per entry).
@@ -117,3 +124,4 @@ Add a water entry, delete one, change day, open history, export Excel, import Ex
 - 2026-10-18: step 1 (split) completed and confirmed working; `sw.js` at v2. Next: step 2, toilet feature.
 - 2026-10-18: reference corrected: no `js/utils.js` exists; location of shared helpers to be confirmed.
 - 2026-10-18: shared helpers confirmed in `js/water.js`; step 2 implementation notes added.
+- 2026-11-01: step 2 (toilet visits) completed, tested in the browser including offline operation, and merged into `main` through PR #5; reference updated to match the implementation.
