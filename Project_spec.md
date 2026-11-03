@@ -1,8 +1,8 @@
-Aqua Tracker — Project Specification
+# Aqua Tracker — Project Specification
 
-Repository: https://github.com/myspace-a/Acqua
-Live application: https://myspace-a.github.io/Acqua/
-Default branch: "main"
+**Repository:** https://github.com/myspace-a/Acqua  
+**Live application:** https://myspace-a.github.io/Acqua/  
+**Default branch:** `main`
 
 This document is the single source of truth for Aqua Tracker's functional requirements, architecture, technical decisions, development rules and project status.
 
@@ -10,7 +10,7 @@ Update the Change log whenever a development step is completed.
 
 ---
 
-1. Project overview
+## 1. Project overview
 
 Aqua Tracker is a client-only Progressive Web App (PWA) for tracking:
 
@@ -19,7 +19,7 @@ Aqua Tracker is a client-only Progressive Web App (PWA) for tracking:
 
 The application is designed primarily for mobile use.
 
-General principles
+### General principles
 
 - UI language: Italian. All application interface text must remain in Italian.
 - Client-only application: no application backend currently exists.
@@ -33,19 +33,21 @@ Tracking data remains on the device and browser where it was entered. Users shou
 
 ---
 
-2. Current project status
+## 2. Current project status
 
-Development step| Status
-Step 1 — Separate HTML, CSS and JavaScript files| Completed
-Step 2 — Toilet visit tracking (Bagno)| Completed, tested and merged into "main"
-Future backend| Not defined
+| Development step | Status |
+|---|---|
+| Step 1 — Separate HTML, CSS and JavaScript files | Completed |
+| Step 2 — Toilet visit tracking (Bagno) | Completed, tested and merged into `main` |
+| Future backend | Not defined |
 
 Step 2 was implemented on a feature branch, tested by the owner in a browser (including offline operation), and merged through GitHub Pull Request #5 on 1 November 2026.
 
 ---
 
-3. Current application structure
+## 3. Current application structure
 
+```text
 Acqua/
 ├── index.html
 ├── style.css
@@ -63,40 +65,42 @@ Acqua/
 │   └── main.js
 └── lib/
     └── xlsx.full.min.js
+```
 
-File responsibilities
+### File responsibilities
 
-File| Responsibility
-"index.html"| Application HTML structure
-"style.css"| Application styling
-"js/storage.js"| Loading and saving data; the only file that accesses localStorage
-"js/water.js"| Water entries, deletion, timeline, progress, history and shared utilities
-"js/toilet.js"| Toilet visits, deletion, timeline and daily statistics
-"js/backup.js"| Excel export and import
-"js/main.js"| Application startup and event listeners
-"lib/xlsx.full.min.js"| Local SheetJS 0.18.5 library
-"manifest.json"| PWA configuration
-"sw.js"| Offline caching
+| File | Responsibility |
+|---|---|
+| `index.html` | Application HTML structure |
+| `style.css` | Application styling |
+| `js/storage.js` | Loading and saving data; the only file that accesses localStorage |
+| `js/water.js` | Water entries, deletion, timeline, progress, history and shared utilities |
+| `js/toilet.js` | Toilet visits, deletion, timeline and daily statistics |
+| `js/backup.js` | Excel export and import |
+| `js/main.js` | Application startup and event listeners |
+| `lib/xlsx.full.min.js` | Local SheetJS 0.18.5 library |
+| `manifest.json` | PWA configuration |
+| `sw.js` | Offline caching |
 
-Shared utilities
+### Shared utilities
 
-The following shared helpers are defined in "js/water.js":
+The following shared helpers are defined in `js/water.js`:
 
-- "sanitize()"
-- "showToast()"
-- "getTodayKey()"
-- "getNowTime()"
-- "formatDate()"
+- `sanitize()`
+- `showToast()`
+- `getTodayKey()`
+- `getNowTime()`
+- `formatDate()`
 
-"js/toilet.js" reuses these helpers.
+`js/toilet.js` reuses these helpers.
 
-There is no "js/utils.js" file.
+There is no `js/utils.js` file.
 
 ---
 
-4. Functional requirements — Water tracking
+## 4. Functional requirements — Water tracking
 
-4.1 Core tracking
+### 4.1 Core tracking
 
 Users can record daily water intake.
 
@@ -111,7 +115,7 @@ Multiple entries can be recorded on the same day at different times.
 
 Users can delete individual entries.
 
-4.2 Glass sizes and quantity
+### 4.2 Glass sizes and quantity
 
 Available glass sizes:
 
@@ -123,7 +127,7 @@ Number of glasses per entry: 1–20, controlled using plus/minus buttons.
 
 Each entry has one glass size and a quantity. There is no separate counter for each glass size.
 
-4.3 Daily view
+### 4.3 Daily view
 
 - Date picker to select a day.
 - Timeline sorted by time.
@@ -136,7 +140,7 @@ Each entry has one glass size and a quantity. There is no separate counter for e
   - First intake time.
   - Last intake time.
 
-4.4 History
+### 4.4 History
 
 A collapsible history displays past days.
 
@@ -148,9 +152,9 @@ Each day shows:
 
 Selecting a day loads its records.
 
-4.5 Water Excel backup
+### 4.5 Water Excel backup
 
-Water worksheet name: "Idratazione".
+Water worksheet name: `Idratazione`.
 
 Columns:
 
@@ -173,17 +177,17 @@ Import validation requirements:
 
 Water duplicate identification uses date, time, size, quantity and note.
 
-Known existing limitation: The current water importer uses "parseInt()" before validation. Consequently, values such as "1.5" or "200abc" may be accepted as "1" or "200". This weakness existed on "main" before Step 2 and was not introduced by the toilet feature. It remains a separate improvement to address in a future task.
+**Known existing limitation:** The current water importer uses `parseInt()` before validation. Consequently, values such as `1.5` or `200abc` may be accepted as `1` or `200`. This weakness existed on `main` before Step 2 and was not introduced by the toilet feature. It remains a separate improvement to address in a future task.
 
 ---
 
-5. Functional requirements — Toilet visits (Bagno)
+## 5. Functional requirements — Toilet visits (Bagno)
 
-Status: implemented, tested and merged into "main".
+**Status: implemented, tested and merged into `main`.**
 
-5.1 Entry fields
+### 5.1 Entry fields
 
-The application provides a separate card labelled Bagno.
+The application provides a separate card labelled **Bagno**.
 
 Each visit contains:
 
@@ -195,7 +199,7 @@ When entered, duration must be a whole number between 1 and 3,600 seconds.
 
 An empty duration is valid and contributes zero seconds to daily totals.
 
-5.2 Daily view
+### 5.2 Daily view
 
 The application displays a separate toilet visit timeline.
 
@@ -212,7 +216,7 @@ Daily statistics:
 
 Deleting a visit removes only the selected visit.
 
-5.3 History
+### 5.3 History
 
 The history combines water and toilet information.
 
@@ -225,12 +229,13 @@ Each day shows:
 
 Days containing only toilet visits must also appear in history.
 
-5.4 Toilet data structure
+### 5.4 Toilet data structure
 
 Toilet data is stored separately from water data, grouped by date.
 
 Example:
 
+```json
 {
   "2026-11-01": [
     {
@@ -243,12 +248,13 @@ Example:
     }
   ]
 }
+```
 
-A missing duration is stored as "null".
+A missing duration is stored as `null`.
 
-5.5 Toilet Excel backup
+### 5.5 Toilet Excel backup
 
-The toilet worksheet is named "Bagno".
+The toilet worksheet is named `Bagno`.
 
 Columns:
 
@@ -266,29 +272,30 @@ Import rules:
 
 Toilet duplicate identification uses date, time and duration.
 
-5.6 Compatibility
+### 5.6 Compatibility
 
 - Existing water data must remain untouched.
 - Old water-only Excel backups must continue to import successfully.
-- A missing "Bagno" worksheet is valid.
+- A missing `Bagno` worksheet is valid.
 - Export must work when only water data exists, only toilet data exists, or both exist.
 
 ---
 
-6. Data storage
+## 6. Data storage
 
 The application uses browser localStorage.
 
-Only "js/storage.js" is allowed to access localStorage.
+Only `js/storage.js` is allowed to access localStorage.
 
-Water data
+### Water data
 
 Key:
 
-"water-tracker-v2-timed"
+`water-tracker-v2-timed`
 
 Existing data structure:
 
+```json
 {
   "2026-11-01": [
     {
@@ -299,31 +306,32 @@ Existing data structure:
     }
   ]
 }
+```
 
 The water key and record format must not change without an explicit migration plan.
 
 Existing user history must be preserved.
 
-Toilet data
+### Toilet data
 
 Key:
 
-"toilet-tracker-v1"
+`toilet-tracker-v1`
 
 Data is stored separately from water data, grouped by date.
 
 Record fields:
 
-- "time"
-- "duration"
+- `time`
+- `duration`
 
 Do not combine the two datasets or change the existing water storage format.
 
 ---
 
-7. Technical rules
+## 7. Technical rules
 
-Application architecture
+### Application architecture
 
 - Use plain HTML, CSS and JavaScript.
 - No frameworks or build tools.
@@ -334,24 +342,24 @@ Application architecture
 - Validate imported data.
 - Keep the application UI in Italian.
 
-PWA and offline support
+### PWA and offline support
 
 Current Service Worker cache name:
 
-"tracker-acqua-v3"
+`tracker-acqua-v3`
 
 The cache uses a cache-first strategy.
 
 The cache list must include all required application assets:
 
-- "./"
-- "index.html"
-- "style.css"
-- All JavaScript files in "js/"
-- "lib/xlsx.full.min.js"
-- "manifest.json"
-- "icon-192.png"
-- "icon-512.png"
+- `./`
+- `index.html`
+- `style.css`
+- All JavaScript files in `js/`
+- `lib/xlsx.full.min.js`
+- `manifest.json`
+- `icon-192.png`
+- `icon-512.png`
 
 On every release:
 
@@ -363,7 +371,7 @@ The Excel library must remain locally available so that import and export work o
 
 ---
 
-8. Security and privacy
+## 8. Security and privacy
 
 - No application backend currently exists.
 - Tracking data is stored locally in browser localStorage.
@@ -376,44 +384,44 @@ Users are responsible for exporting backups before clearing browser data, changi
 
 ---
 
-9. Development workflow
+## 9. Development workflow
 
 Development is incremental and organized into separate build tasks/chats.
 
-Branch and Pull Request workflow
+### Branch and Pull Request workflow
 
-1. Start from the latest "main".
+1. Start from the latest `main`.
 2. Create a feature branch for each development task.
 3. Inspect existing files before coding.
 4. Agree on the files to be changed before implementation.
 5. Implement only the approved scope.
 6. Review the changes.
 7. Test the application before merging.
-8. Create a Pull Request into "main".
+8. Create a Pull Request into `main`.
 9. Merge only after successful testing and owner approval.
 
-Do not develop directly on "main".
+Do not develop directly on `main`.
 
-Delivery rules
+### Delivery rules
 
 - Prefer complete files over partial patches when delivering files for manual upload.
 - Provide simple instructions suitable for a non-developer.
 - Avoid requiring terminal commands or automated testing frameworks for normal application acceptance testing.
 - The requirements and coaching work is separate from implementation work.
 
-Release backup
+### Release backup
 
 Before every release, export an Excel backup from the application.
 
 ---
 
-10. Testing strategy
+## 10. Testing strategy
 
 Testing is primarily user-oriented and performed through the browser.
 
 The owner should be able to execute the acceptance tests without using automated test frameworks or complicated developer tools.
 
-Water regression tests
+### Water regression tests
 
 - Add a water entry.
 - Delete a water entry.
@@ -424,7 +432,7 @@ Water regression tests
 - Confirm existing water data is preserved.
 - Close and reopen the application.
 
-Toilet tests
+### Toilet tests
 
 - Add a visit with a duration.
 - Add a visit without a duration.
@@ -434,7 +442,7 @@ Toilet tests
 - Check visit count and total duration.
 - Check history, including a day with only toilet visits.
 
-Backup tests
+### Backup tests
 
 - Export when both datasets exist.
 - Export when only toilet data exists.
@@ -442,7 +450,7 @@ Backup tests
 - Import an older water-only backup.
 - Import the same backup twice and verify that duplicates are not created.
 
-Offline tests
+### Offline tests
 
 - Load the application online first.
 - Open the application offline.
@@ -450,7 +458,7 @@ Offline tests
 - Export and import Excel backups while offline.
 - Close and reopen the application.
 
-Recorded test status
+### Recorded test status
 
 Step 2 was successfully tested by the owner in a browser, including:
 
@@ -466,25 +474,23 @@ No automated test suite was run as part of Step 2.
 
 ---
 
-11. Roadmap
+## 11. Roadmap
 
-Completed
+### Completed
 
-1. Step 1 — Application file separation
-   
+1. **Step 1 — Application file separation**
    - Separated HTML, CSS and JavaScript.
    - No intended change in appearance or functionality.
    - Completed and confirmed working on 18 October 2026.
 
-2. Step 2 — Toilet visits (Bagno)
-   
+2. **Step 2 — Toilet visits (Bagno)**
    - Separate toilet tracking.
    - Daily statistics and combined history.
    - Excel backup and import.
    - Offline support.
-   - Tested and merged into "main" through PR #5 on 1 November 2026.
+   - Tested and merged into `main` through PR #5 on 1 November 2026.
 
-Future — Backend
+### Future — Backend
 
 Backend development is not yet defined or approved.
 
@@ -502,7 +508,7 @@ Do not start backend implementation until its requirements and architecture have
 
 ---
 
-12. Decisions and constraints
+## 12. Decisions and constraints
 
 - Water counter: one glass size plus a quantity per entry.
 - Daily water goal: fixed at 2,000 ml.
@@ -516,13 +522,14 @@ Do not start backend implementation until its requirements and architecture have
 
 ---
 
-13. Change log
+## 13. Change log
 
-- 2026-10-18: Initial project reference created. Step 1 briefed.
-- 2026-10-18: Open points resolved: counter behavior retained, fixed daily goal, and deletion removes only one selected entry.
-- 2026-10-18: Step 1 partially completed; "style.css" uploaded.
-- 2026-10-18: Step 1 completed and confirmed working. Service Worker cache at v2.
-- 2026-10-18: Reference corrected: no "js/utils.js"; shared helpers remain in "js/water.js".
-- 2026-10-18: Step 2 implementation notes added.
-- 2026-11-01: Step 2 — Toilet visits completed, tested in the browser including offline operation, and merged into "main" through PR #5.
-- 2026-11-03: Documentation reorganized: this specification replaces the previous "acqua-reference-1.md"; "README.md" serves as the repository introduction.
+- **2026-10-18:** Initial project reference created. Step 1 briefed.
+- **2026-10-18:** Open points resolved: counter behavior retained, fixed daily goal, and deletion removes only one selected entry.
+- **2026-10-18:** Step 1 partially completed; `style.css` uploaded.
+- **2026-10-18:** Step 1 completed and confirmed working. Service Worker cache at v2.
+- **2026-10-18:** Reference corrected: no `js/utils.js`; shared helpers remain in `js/water.js`.
+- **2026-10-18:** Step 2 implementation notes added.
+- **2026-11-01:** Step 2 — Toilet visits completed, tested in the browser including offline operation, and merged into `main` through PR #5.
+- **2026-11-03:** Documentation reorganized: this specification replaces the previous `acqua-reference-1.md`; `README.md` serves as the repository introduction.
+- 
