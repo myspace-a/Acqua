@@ -1,58 +1,75 @@
-Aqua Tracker
+# Aqua Tracker
 
-Aqua Tracker is a lightweight, installable web application for tracking daily water intake and toilet visits.
+Aqua Tracker is a lightweight, installable Progressive Web App (PWA) for tracking daily water intake and bathroom visits.
 
-Live application: https://myspace-a.github.io/Acqua/
+**Live application:** https://myspace-a.github.io/Acqua/
 
-The application interface is in Italian.
+## Purpose
 
-Features
+Aqua Tracker provides a simple way to record and review:
 
-- Water tracking: record intake time, glass size, number of glasses and optional notes.
-- Daily goal: monitor progress towards a fixed daily goal of 2,000 ml.
-- Toilet visits: record visit times and optional duration in seconds.
-- Daily history: review water intake and toilet visit statistics by date.
-- Excel backup: export and import water and toilet records.
-- Offline support: continue using the application without an internet connection after it has been loaded and cached.
-- Installable PWA: add the application to a compatible device's home screen.
+- Water intake
+- Bathroom visits
+- Daily history and statistics
+- Excel backups and restore
+- Offline use
 
-Technology
+The application is designed primarily for mobile devices and stores tracking data locally in the browser.
+
+## Current features
+
+- Water intake tracking
+- Bathroom visit tracking
+- Daily timelines and statistics
+- History by date
+- Excel import and export
+- Offline operation
+- Installable PWA
+- Italian and English interface
+
+## Project status
+
+The core tracking functionality is complete:
+
+- **Phase 1 — Application foundation and water tracking:** completed
+- **Phase 2 — Bathroom visit tracking:** completed and merged into `main`
+- **UI redesign:** requirements and approved mock-ups completed; implementation not yet completed
+- **Backend:** future investigation; not currently implemented
+
+## Technology
+
+Aqua Tracker intentionally uses a simple client-side architecture:
 
 - HTML
 - CSS
 - Plain JavaScript
-- Browser localStorage for data persistence
-- SheetJS for Excel import and export
+- Browser `localStorage`
+- SheetJS for Excel import/export
 - Service Worker for offline support
-- GitHub Pages for static hosting
+- GitHub Pages for hosting
 
-No application backend or account is required. Tracking data is stored locally in the browser on the device being used.
+There is currently no application backend or user account system.
 
-Important: Browser data is device- and browser-specific. Export Excel backups regularly, especially before changing devices or clearing browser data.
+## Documentation
 
-Using the application
+The project documentation is organized into three complementary documents:
 
-Open the "live application" (https://myspace-a.github.io/Acqua/) in your browser.
+- [`PROJECT_SPEC.md`](PROJECT_SPEC.md) — authoritative project requirements, technical constraints, decisions and project status
+- [`docs/ui/UI_DESIGN.md`](docs/ui/UI_DESIGN.md) — UI redesign and visual design reference
+- `docs/ui/mockups/` — approved UI mock-up images
 
-On a compatible mobile device, use the browser's installation or "Add to Home Screen" option to install the PWA.
+Use `PROJECT_SPEC.md` as the authoritative source when requirements or decisions need to be checked.
 
-Project documentation
+## Using the application
 
-See "PROJECT_SPEC.md" (PROJECT_SPEC.md) for the complete project specification, including:
+Open the [live application](https://myspace-a.github.io/Acqua/) in a compatible browser.
 
-- Functional requirements
-- Application architecture and file structure
-- Data storage and Excel backup formats
-- Technical constraints and design decisions
-- Testing strategy
-- Development workflow and roadmap
+On a compatible mobile device, the application can be installed using the browser's installation or "Add to Home Screen" functionality.
 
-Project status
+Tracking data is stored locally on the device and browser being used. Regular Excel backups are therefore recommended, especially before clearing browser data or changing device/browser.
 
-- Step 1 — Application file separation: completed.
-- Step 2 — Toilet visit tracking: completed, browser-tested (including offline operation) and merged into "main".
-- Future backend: not yet defined.
+## Repository
 
-Repository
+GitHub repository:
 
 https://github.com/myspace-a/Acqua
