@@ -764,6 +764,8 @@ The redesign must additionally be checked for:
 - Switching between Input and Summary without data loss
 - Correct timeline layout
 - No overlap between timeline information and delete controls
+- Expand and collapse History
+- Select a historical day from History
 - Usability on a mobile screen
 
 ## 15.3 Data preservation
