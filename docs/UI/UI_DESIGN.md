@@ -489,7 +489,7 @@ They do not replace the written requirements in `PROJECT_SPEC.md`.
 The mock-ups for new version are stored under:
 
 ```text
-docs/ui/mockups/
+docs/UI/mockups/
 ```
 
 ### Approved two-tab reference
@@ -508,7 +508,7 @@ The approved two-tab reference illustrates:
 Expected file:
 
 ```text
-docs/ui/mockups/mock up 2 tabs aqua tracker.png
+docs/UI/mockups/mock up 2 tabs aqua tracker.png
 ```
 
 ### Approved single-page reference
@@ -518,7 +518,7 @@ A separate mock-up illustrates the single vertically scrolling presentation.
 Expected file:
 
 ```text
-docs/ui/mockups/mock up single-page aqua traker.png
+docs/UI/mockups/mock up single-page aqua tracker.png
 ```
 
 **Note:** These filenames are proposed placeholders. The actual mock-up filenames may be changed when the images are added to the repository. The written requirements remain authoritative.
