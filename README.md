@@ -55,8 +55,8 @@ There is currently no application backend or user account system.
 The project documentation is organized into three complementary documents:
 
 - [`PROJECT_SPEC.md`](PROJECT_SPEC.md) — authoritative project requirements, technical constraints, decisions and project status
-- [`docs/ui/UI_DESIGN.md`](docs/ui/UI_DESIGN.md) — UI redesign and visual design reference
-- `docs/ui/mockups/` — approved UI mock-up images
+- [`docs/UI/UI_DESIGN.md`](docs/UI/UI_DESIGN.md) — UI redesign and visual design reference
+- `docs/UI/mockups/` — approved UI mock-up images
 
 Use `PROJECT_SPEC.md` as the authoritative source when requirements or decisions need to be checked.
 
