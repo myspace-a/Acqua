@@ -48,9 +48,10 @@ The user should be able to immediately distinguish:
 1. Current date
 2. Water entry
 3. Bathroom entry
-4. Water history/timeline
-5. Bathroom history/timeline
+4. Water timeline
+5. Bathroom timeline
 6. Daily statistics
+7. Historical information
 
 ### 2.4 Strong water/bathroom distinction
 
@@ -283,6 +284,7 @@ The intended information hierarchy is:
 6. Bathroom timeline
 7. Water statistics
 8. Bathroom statistics
+9. Collapsible History
 
 The exact visual grouping may be adjusted during implementation as long as the approved requirements and visual hierarchy are preserved.
 
@@ -307,6 +309,7 @@ Contains:
 - Water statistics
 - Bathroom visits timeline
 - Bathroom statistics
+- Collapsible History
 
 The two tabs use the same underlying data.
 
@@ -370,7 +373,61 @@ The redesign should avoid unnecessary empty space or oversized cards.
 
 ---
 
-# 15. Navigation and Interaction Principles
+# 15. History
+
+History is a retained part of the Aqua Tracker experience and should remain available in the redesigned UI.
+
+The redesign preserves the useful interaction from the existing application: the History section can be **expanded or collapsed** by the user.
+
+When expanded, History presents a compact list of historical days with the relevant combined water and bathroom information.
+
+The History component should:
+
+- Remain visually secondary to the current day's tracking information.
+- Use compact rows to avoid excessive vertical space.
+- Clearly distinguish the date from the daily totals.
+- Allow the user to expand or collapse the historical list.
+- Allow the user to select a historical day and review that day's records.
+- Combine water and bathroom information rather than creating separate history sections.
+
+### Single-page layout
+
+In the single-page layout, History is positioned after the current-day timelines and statistics.
+
+The intended order is:
+
+1. Water timeline
+2. Bathroom timeline
+3. Water statistics
+4. Bathroom statistics
+5. **History — collapsible**
+
+### Two-tab layout
+
+In the two-tab layout, History belongs to the **Summary** tab.
+
+The Summary structure is:
+
+1. Date selector
+2. Water Intake timeline
+3. Water statistics
+4. Bathroom Visits timeline
+5. Bathroom statistics
+6. **History — collapsible**
+
+### Existing UI reference
+
+The existing application already provides a useful collapsible History interaction.
+
+The old-layout screenshots stored under `docs/UI/Old Layouts/` are reference material for preserving this interaction.
+
+The old visual styling is not authoritative. The redesigned History component should follow the new UI visual language and the layout principles defined in this document.
+
+The History section is a UI presentation of the historical functionality defined in `PROJECT_SPEC.md`; it does not introduce new historical data or behavior.
+
+----
+
+# 16. Navigation and Interaction Principles
 
 The UI should make the following interactions obvious:
 
@@ -379,6 +436,8 @@ The UI should make the following interactions obvious:
 - Record a bathroom visit
 - Delete an individual entry
 - Switch between Input and Summary
+- Expand or collapse History
+- Select a historical day
 - Open the hamburger menu
 - Change language
 - Open Settings
@@ -388,7 +447,7 @@ The interface should avoid duplicate navigation mechanisms for the same function
 
 ---
 
-# 16. Language Presentation
+# 17. Language Presentation
 
 The application supports Italian and English.
 
@@ -404,7 +463,7 @@ Approved terminology is defined in `PROJECT_SPEC.md`.
 
 ---
 
-# 17. Responsive and Mobile Guidance
+# 18. Responsive and Mobile Guidance
 
 The primary design target is a mobile screen.
 
@@ -422,13 +481,12 @@ The layout should remain usable across different mobile screen widths.
 
 ---
 
-# 18. Mock-ups
-
+# 19. Mock-ups
 The mock-ups are visual references for the approved redesign.
 
 They do not replace the written requirements in `PROJECT_SPEC.md`.
 
-The mock-ups should eventually be stored under:
+The mock-ups for new version are stored under:
 
 ```text
 docs/ui/mockups/
@@ -450,7 +508,7 @@ The approved two-tab reference illustrates:
 Expected file:
 
 ```text
-docs/ui/mockups/ui-redesign-tabs.png
+docs/ui/mockups/mock up 2 tabs aqua tracker.png
 ```
 
 ### Approved single-page reference
@@ -460,14 +518,14 @@ A separate mock-up illustrates the single vertically scrolling presentation.
 Expected file:
 
 ```text
-docs/ui/mockups/ui-redesign-single-page.png
+docs/ui/mockups/mock up single-page aqua traker.png
 ```
 
 **Note:** These filenames are proposed placeholders. The actual mock-up filenames may be changed when the images are added to the repository. The written requirements remain authoritative.
 
 ---
 
-# 19. Relationship with Project Specification
+# 20. Relationship with Project Specification
 
 The separation between the two documents is intentional.
 
@@ -491,7 +549,7 @@ This document must not introduce new functional behavior that is not approved in
 
 ---
 
-# 20. Design Status
+# 21. Design Status
 
 The UI redesign design work is **approved and ready for implementation**.
 
