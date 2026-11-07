@@ -513,6 +513,7 @@ The two-tab layout contains:
 - Water statistics
 - Bathroom visit timeline
 - Bathroom statistics
+- Collapsible History
 
 The date selector must be available in both views.
 
