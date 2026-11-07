@@ -6,7 +6,7 @@
 
 This document is the **single source of truth** for Aqua Tracker's product requirements, functional behavior, technical constraints, approved decisions and project status.
 
-Detailed visual presentation of the UI is maintained separately in [`docs/ui/UI_DESIGN.md`](docs/ui/UI_DESIGN.md).
+Detailed visual presentation of the UI is maintained separately in [`docs/UI/UI_DESIGN.md`](docs/UI/UI_DESIGN.md).
 
 If another project document conflicts with this specification, this document is authoritative for application requirements and behavior.
 
@@ -136,7 +136,7 @@ Acqua/
 ├── icon-192.png
 ├── icon-512.png
 ├── docs/
-│   └── ui/
+│   └── UI/
 │       ├── UI_DESIGN.md
 │       └── mockups/
 ├── js/
@@ -489,7 +489,7 @@ Preferences must work offline.
 
 The UI redesign must preserve the application's functionality while improving clarity and mobile usability.
 
-Detailed visual design is documented separately in [`docs/ui/UI_DESIGN.md`](docs/ui/UI_DESIGN.md).
+Detailed visual design is documented separately in [`docs/UI/UI_DESIGN.md`](docs/UI/UI_DESIGN.md).
 
 ## 9.1 Layout
 
@@ -823,8 +823,8 @@ Implementation is the next development activity.
 The implementation must use:
 
 - This specification for requirements and behavior
-- [`docs/ui/UI_DESIGN.md`](docs/ui/UI_DESIGN.md) for visual design
-- The approved mock-ups under `docs/ui/mockups/` as visual references
+- [`docs/UI/UI_DESIGN.md`](docs/UI/UI_DESIGN.md) for visual design
+- The approved mock-ups under `docs/UI/mockups/` as visual references
 
 The UI redesign must not introduce backend functionality.
 
@@ -860,8 +860,8 @@ The project uses three complementary documentation layers.
 |---|---|
 | `README.md` | Concise project overview and entry point |
 | `PROJECT_SPEC.md` | Authoritative requirements, behavior, technical constraints and decisions |
-| `docs/ui/UI_DESIGN.md` | Visual and interaction design reference |
-| `docs/ui/mockups/` | Approved visual mock-ups referenced by the UI design document |
+| `docs/UI/UI_DESIGN.md` | Visual and interaction design reference |
+| `docs/UI/mockups/` | Approved visual mock-ups referenced by the UI design document |
 
 The distinction is:
 
