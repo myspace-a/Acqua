@@ -775,7 +775,7 @@ The UI redesign should remain within the existing technical architecture.
 
 The redesign is a UI/usability initiative, not a backend initiative.
 
-Implementation must preserve existing data and functionality.
+Implementation must preserve existing data and functionality unless an approved requirement explicitly changes or removes a feature.
 
 ---
 
