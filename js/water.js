@@ -25,7 +25,8 @@ function getNowTime() {
 }
 function formatDate(dateKey) {
   const [y,m,d] = dateKey.split('-');
-  return new Date(Number(y),Number(m)-1,Number(d)).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const language = uiPreferences && uiPreferences.language === 'en' ? 'en-GB' : 'it-IT';
+  return new Date(Number(y),Number(m)-1,Number(d)).toLocaleDateString(language,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
 
 function getDayEntries() {
@@ -46,12 +47,13 @@ function updateQtyMl() {
 function addEntry() {
   const time = document.getElementById('timeInput').value;
   const size = parseInt(document.getElementById('sizeSelect').value, 10);
-  const note = document.getElementById('noteInput').value.trim();
-  if (!time) { alert("Inserisci l'orario!"); return; }
+  const noteInput = document.getElementById('noteInput');
+  const note = noteInput ? noteInput.value.trim() : '';
+  if (!time) { alert(uiPreferences.language === 'en' ? 'Enter a time.' : "Inserisci l'orario!"); return; }
   if (!data[selectedDate]) data[selectedDate] = [];
   data[selectedDate].push({ time, size, qty: formQty, note });
   saveData();
-  document.getElementById('noteInput').value = '';
+  if (noteInput) noteInput.value = '';
   render();
 }
 function deleteEntry(index) {
@@ -75,13 +77,13 @@ function renderTimeline() {
   const entries = getDayEntries();
   const tl = document.getElementById('timeline');
   if (!entries.length) {
-    tl.innerHTML = '<div class="empty-timeline">💧 Nessuna assunzione registrata</div>';
+    tl.innerHTML = `<div class="empty-timeline">${t('noWater')}</div>`;
     return;
   }
   tl.innerHTML = entries.map((e, i) => `
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <button class="tl-delete" data-index="${i}" aria-label="Elimina assunzione">✕</button>
+      <button class="tl-delete" data-index="${i}" aria-label="${t('waterDelete')}">✕</button>
       <div class="tl-header">
         <div class="tl-time">${sanitize(e.time)}</div>
         <div class="tl-right">
@@ -103,13 +105,11 @@ function renderProgress() {
   document.getElementById('progressFill').style.background = `linear-gradient(90deg, ${color}, ${color}bb)`;
   document.getElementById('progressStatus').style.color = pct >= 100 ? '#34d399' : '#64748b';
   document.getElementById('progressStatus').textContent = pct >= 100
-    ? '🎉 Obiettivo raggiunto!'
-    : `${Math.round(pct)}% dell'obiettivo (${GOAL} ml)`;
+    ? `🎉 ${t('goalReached')}`
+    : t('goalProgress').replace('{pct}', Math.round(pct)).replace('{goal}', GOAL);
   const totalGlasses = entries.reduce((s,e) => s + Number(e.qty), 0);
   document.getElementById('statEntries').textContent = entries.length;
   document.getElementById('statGlasses').textContent = totalGlasses;
-  document.getElementById('statFirst').textContent = entries.length ? entries[0].time : '—';
-  document.getElementById('statLast').textContent = entries.length ? entries[entries.length-1].time : '—';
 }
 function renderHistory() {
   const dates = [...new Set([...Object.keys(data), ...Object.keys(toiletData)])].sort((a,b) => b.localeCompare(a));
@@ -121,7 +121,7 @@ function renderHistory() {
     const visits = (toiletData[date] || []);
     const toiletSeconds = visits.reduce((sum, visit) => sum + (Number(visit.duration) || 0), 0);
     const color = waterTotal >= GOAL ? '#34d399' : '#94a3b8';
-    const detail = `${entries.length} assunzioni · ${entries.reduce((s,e)=>s+Number(e.qty),0)} bicchieri<br>${visits.length} visite bagno · ${toiletSeconds} secondi`;
+    const detail = `${entries.length} ${t('entries')} · ${entries.reduce((s,e)=>s+Number(e.qty),0)} ${t('glassesPlural')}<br>${visits.length} ${t('bathroomVisits')} · ${toiletSeconds} ${t('seconds')}`;
     return `<div class="history-item ${date === selectedDate ? 'selected' : ''}" data-date="${sanitize(date)}">
       <div class="history-top">
         <div class="history-date">${sanitize(formatDate(date))}</div>
@@ -141,6 +141,8 @@ function selectDay(date) {
   selectedDate = date;
   document.getElementById('dateInput').value = date;
   document.getElementById('dateLabel').textContent = formatDate(date);
+  document.getElementById('summaryDateInput').value = date;
+  document.getElementById('summaryDateLabel').textContent = formatDate(date);
   document.getElementById('toiletTimeInput').value = getNowTime();
   render();
 }
@@ -148,5 +150,8 @@ function toggleHistory() {
   const sec = document.getElementById('history-section');
   const visible = sec.style.display === 'block';
   sec.style.display = visible ? 'none' : 'block';
-  document.getElementById('toggleBtn').textContent = visible ? '▼ Mostra storico' : '▲ Nascondi storico';
+  const button = document.getElementById('toggleBtn');
+  button.setAttribute('aria-expanded', String(!visible));
+  button.setAttribute('aria-label', visible ? t('showHistory') : t('hideHistory'));
+  button.querySelector('.history-chevron').textContent = visible ? '⌄' : '⌃';
 }

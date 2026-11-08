@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tracker-acqua-v3';
+const CACHE_NAME = 'tracker-acqua-v4';
 const ASSETS = [
   './',
   './index.html',

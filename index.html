@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acqua</title>
+<title>Aqua Tracker</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#38bdf8">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Acqua">
+<meta name="apple-mobile-web-app-title" content="Aqua Tracker">
 <script src="lib/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="header">
+<header class="header app-header">
   <svg class="header-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -27,79 +27,105 @@
       fill="url(#dropGrad)" stroke="#0ea5e9" stroke-width="2"/>
     <ellipse cx="38" cy="48" rx="6" ry="10" fill="rgba(255,255,255,0.25)" transform="rotate(-20 38 48)"/>
   </svg>
-  <h1>Acqua</h1>
-  <p>Tracker idratazione · con orario</p>
-</div>
+  <h1>Aqua Tracker</h1>
+  <button class="menu-button" id="menuButton" type="button" aria-label="Apri menu" aria-controls="mainMenu" aria-expanded="false">☰</button>
+  <nav class="main-menu" id="mainMenu" aria-label="Menu principale" hidden>
+    <button type="button" class="menu-action" data-menu-action="backup" aria-controls="backupMenu" aria-expanded="false" data-i18n="backup">Backup Excel</button>
+    <div class="menu-subgroup" id="backupMenu" hidden>
+      <button type="button" class="menu-choice" data-backup-action="export" data-i18n="export">Esporta Excel</button>
+      <button type="button" class="menu-choice" data-backup-action="import" data-i18n="import">Importa Excel</button>
+    </div>
+    <button type="button" class="menu-action" data-menu-action="settings" aria-controls="settingsMenu" aria-expanded="false" data-i18n="settings">Impostazioni</button>
+    <div class="menu-subgroup" id="settingsMenu" hidden>
+      <label class="menu-check"><input type="checkbox" id="glassCounterSetting"><span data-i18n="glassCounter">Contatore bicchieri</span></label>
+      <div class="menu-heading" data-i18n="layout">Layout</div>
+      <button type="button" class="menu-choice" data-layout-choice="single" data-i18n="singlePage">Pagina singola</button>
+      <button type="button" class="menu-choice" data-layout-choice="tabs" data-i18n="twoTabs">Due schede</button>
+    </div>
+    <button type="button" class="menu-action" data-menu-action="language" aria-controls="languageMenu" aria-expanded="false" data-i18n="language">Lingua</button>
+    <div class="menu-subgroup" id="languageMenu" hidden>
+      <button type="button" class="menu-choice" data-language-choice="it">Italiano</button>
+      <button type="button" class="menu-choice" data-language-choice="en">English</button>
+    </div>
+    <button type="button" class="menu-action" data-menu-action="information" data-i18n="information">Informazioni</button>
+  </nav>
+</header>
 
-<div class="card">
-  <span class="card-label">Giorno selezionato</span>
-  <input type="date" id="dateInput" />
+<main id="app" data-layout="single">
+  <div class="tab-bar" id="tabBar" role="tablist" aria-label="Sezioni" hidden>
+    <button type="button" class="tab-button active" id="inputTab" data-tab="input" role="tab" aria-controls="inputPanel" aria-selected="true" data-i18n="inputTab">Inserimento</button>
+    <button type="button" class="tab-button" id="summaryTab" data-tab="summary" role="tab" aria-controls="summaryPanel" aria-selected="false" data-i18n="summaryTab">Riepilogo</button>
+  </div>
+  <section class="view-panel" id="inputPanel" data-panel="input">
+<div class="card date-card">
+  <span class="card-label" data-i18n="selectedDate">Giorno selezionato</span>
+  <div class="date-row"><button type="button" class="date-step" data-date-step="-1" aria-label="Giorno precedente">‹</button><input type="date" id="dateInput" /><button type="button" class="date-step" data-date-step="1" aria-label="Giorno successivo">›</button></div>
   <p class="date-label" id="dateLabel"></p>
 </div>
 
 <div class="tracking-grid">
-  <div class="card">
-    <span class="card-label">Aggiungi assunzione</span>
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="timeInput">Orario</label>
-        <input type="time" id="timeInput" />
-      </div>
-      <div class="form-field">
-        <label for="sizeSelect">Dimensione (ml)</label>
-        <select id="sizeSelect">
-          <option value="100">100 ml</option>
-          <option value="150">150 ml</option>
-          <option value="200" selected>200 ml</option>
-          <option value="250">250 ml</option>
-          <option value="300">300 ml</option>
-          <option value="350">350 ml</option>
-          <option value="400">400 ml</option>
-          <option value="500">500 ml</option>
-        </select>
+  <div class="card water-card">
+    <h2 class="card-label"><span aria-hidden="true">🥛</span> <span data-i18n="waterInput">Assunzione Acqua</span></h2>
+    <div class="form-field volume-field">
+      <label data-i18n="volume">Volume</label>
+      <div class="volume-grid" id="volumeChoices" role="group" aria-label="Volume d'acqua">
+          <button type="button" class="volume-choice" data-size="100">100 ml</button>
+          <button type="button" class="volume-choice" data-size="150">150 ml</button>
+          <button type="button" class="volume-choice" data-size="200">200 ml</button>
+          <button type="button" class="volume-choice" data-size="250">250 ml</button>
+          <button type="button" class="volume-choice" data-size="300">300 ml</button>
+          <button type="button" class="volume-choice" data-size="400">400 ml</button>
       </div>
     </div>
-    <div class="form-field qty-field">
-      <label>Numero bicchieri</label>
-      <div class="qty-row">
-        <button class="qty-btn" id="qtyMinus" type="button">−</button>
-        <span class="qty-num" id="qtyNum">1</span>
-        <button class="qty-btn" id="qtyPlus" type="button">+</button>
-        <span class="qty-ml" id="qtyMl">= 200 ml</span>
+    <select id="sizeSelect" class="visually-hidden" aria-hidden="true" tabindex="-1">
+      <option value="100">100 ml</option><option value="150">150 ml</option>
+      <option value="200" selected>200 ml</option><option value="250">250 ml</option>
+      <option value="300">300 ml</option><option value="400">400 ml</option>
+    </select>
+    <div class="form-grid water-form-grid">
+      <div class="form-field"><label for="timeInput" data-i18n="time">Orario</label><input type="time" id="timeInput" /></div>
+      <div class="form-field qty-field" id="qtyField" hidden>
+        <label data-i18n="glasses">Numero bicchieri</label>
+        <div class="qty-row"><button class="qty-btn" id="qtyMinus" type="button" aria-label="Diminuisci">−</button><span class="qty-num" id="qtyNum">1</span><button class="qty-btn" id="qtyPlus" type="button" aria-label="Aumenta">+</button><span class="qty-ml" id="qtyMl">= 200 ml</span></div>
       </div>
     </div>
-    <input class="note-input" type="text" id="noteInput" placeholder="Nota opzionale (es. dopo allenamento)..." maxlength="60" />
-    <button class="add-btn" id="addBtn" type="button">+ Aggiungi</button>
+    <button class="add-btn" id="addBtn" type="button" data-i18n="addWater">+ Aggiungi</button>
   </div>
 
   <div class="card toilet-card">
-    <span class="card-label">Bagno</span>
+    <h2 class="card-label"><span aria-hidden="true">🚽</span> <span data-i18n="bathroomInput">Bagno</span></h2>
     <div class="form-grid">
       <div class="form-field">
-        <label for="toiletTimeInput">Orario</label>
+        <label for="toiletTimeInput" data-i18n="time">Orario</label>
         <input type="time" id="toiletTimeInput" required />
       </div>
       <div class="form-field">
-        <label for="toiletDurationInput">Durata (secondi)</label>
+        <label for="toiletDurationInput" data-i18n="duration">Durata (secondi)</label>
         <input class="duration-input" type="number" id="toiletDurationInput"
-          min="1" max="3600" step="1" inputmode="numeric" placeholder="Facoltativa" />
+          min="1" max="3600" step="1" inputmode="numeric" placeholder="Facoltativa" data-i18n-placeholder="optional" />
       </div>
     </div>
-    <p class="field-hint">La durata è facoltativa. Se vuota, viene conteggiata come 0 secondi.</p>
-    <button class="add-btn toilet-add-btn" id="addToiletBtn" type="button">+ Registra visita</button>
+    <button class="add-btn toilet-add-btn" id="addToiletBtn" type="button" data-i18n="addVisit">+ Registra visita</button>
   </div>
 </div>
 
-<div class="card">
-  <span class="card-label">Timeline del giorno</span>
+  </section>
+  <section class="view-panel summary-panel" id="summaryPanel" data-panel="summary">
+<div class="card date-card summary-date-card">
+  <span class="card-label" data-i18n="selectedDate">Giorno selezionato</span>
+  <div class="date-row"><button type="button" class="date-step" data-date-step="-1" aria-label="Giorno precedente">‹</button><input type="date" id="summaryDateInput" /><button type="button" class="date-step" data-date-step="1" aria-label="Giorno successivo">›</button></div>
+  <p class="date-label" id="summaryDateLabel"></p>
+</div>
+<div class="card water-card water-timeline-card">
+  <h2 class="card-label"><span aria-hidden="true">🥛</span> <span data-i18n="waterTimeline">Assunzioni Acqua</span></h2>
   <div class="timeline" id="timeline">
-    <div class="empty-timeline">💧 Nessuna assunzione registrata</div>
+    <div class="empty-timeline" data-i18n="noWater">Nessuna assunzione registrata</div>
   </div>
 </div>
 
-<div class="card">
+<div class="card water-card water-stats-card">
   <div class="progress-header">
-    <span>Totale giornaliero</span>
+    <span><span aria-hidden="true">🥛</span> <span data-i18n="totalWater">Totale assunzioni acqua</span></span>
     <span id="progressText" class="progress-text"></span>
   </div>
   <div class="progress-bar-bg">
@@ -107,41 +133,50 @@
   </div>
   <div class="progress-status" id="progressStatus"></div>
   <div class="stats-grid">
-    <div class="stat-box"><div class="stat-value" id="statEntries">0</div><div class="stat-label">Assunzioni</div></div>
-    <div class="stat-box"><div class="stat-value" id="statGlasses">0</div><div class="stat-label">Bicchieri totali</div></div>
-    <div class="stat-box"><div class="stat-value" id="statFirst">—</div><div class="stat-label">Prima assunzione</div></div>
-    <div class="stat-box"><div class="stat-value" id="statLast">—</div><div class="stat-label">Ultima assunzione</div></div>
+    <div class="stat-box"><div class="stat-value" id="statEntries">0</div><div class="stat-label" data-i18n="waterEntries">Assunzioni</div></div>
+    <div class="stat-box"><div class="stat-value" id="statGlasses">0</div><div class="stat-label" data-i18n="totalGlasses">Bicchieri totali</div></div>
   </div>
 </div>
 
-<div class="card">
-  <span class="card-label">Visite in bagno</span>
+<div class="card toilet-card toilet-timeline-card">
+  <h2 class="card-label"><span aria-hidden="true">🚽</span> <span data-i18n="bathroomTimeline">Visite in bagno</span></h2>
   <div class="timeline toilet-timeline" id="toiletTimeline">
-    <div class="empty-timeline">Nessuna visita registrata</div>
-  </div>
-  <div class="toilet-stats">
-    <div class="stat-box"><div class="stat-value" id="toiletStatVisits">0</div><div class="stat-label">Visite</div></div>
-    <div class="stat-box"><div class="stat-value" id="toiletStatDuration">0</div><div class="stat-label">Secondi totali</div></div>
+    <div class="empty-timeline" data-i18n="noVisits">Nessuna visita registrata</div>
   </div>
 </div>
 
-<button class="toggle-btn" id="toggleBtn" type="button">▼ Mostra storico</button>
+<div class="card toilet-card toilet-stats-card">
+  <h2 class="card-label"><span aria-hidden="true">🚽</span> <span data-i18n="visitSummary">Riepilogo visite</span></h2>
+  <div class="toilet-stats">
+    <div class="stat-box"><div class="stat-value" id="toiletStatVisits">0</div><div class="stat-label" data-i18n="visits">Visite</div></div>
+    <div class="stat-box"><div class="stat-value" id="toiletStatDuration">0</div><div class="stat-label" data-i18n="totalSeconds">Secondi totali</div></div>
+  </div>
+</div>
+
+<section class="history-wrap">
+<button class="toggle-btn" id="toggleBtn" type="button" aria-expanded="false"><span aria-hidden="true">◷</span> <span data-i18n="history">Storico</span><span class="history-chevron">⌄</span></button>
 <div id="history-section">
   <div class="card history-card">
     <div id="historyList"></div>
   </div>
 </div>
+</section>
 
 <div class="btn-row" id="exportRow" style="display:none;">
-  <button class="export-btn" id="exportBtn" type="button">📥 Esporta Excel</button>
-  <button class="import-btn" id="importBtnMain" type="button">📤 Importa Excel</button>
+  <button class="export-btn" id="exportBtn" type="button" data-i18n="export">Esporta Excel</button>
+  <button class="import-btn" id="importBtnMain" type="button" data-i18n="import">Importa Excel</button>
 </div>
 <div id="importOnlyRow" class="import-only-row">
-  <button class="import-btn" id="importBtnOnly" type="button">📤 Importa Excel</button>
+  <button class="import-btn" id="importBtnOnly" type="button" data-i18n="import">Importa Excel</button>
 </div>
+  </section>
+</main>
 
 <input type="file" id="importFileInput" accept=".xlsx,.xls" />
 <div class="toast" id="toast"></div>
+<dialog id="infoDialog" class="info-dialog">
+  <div class="dialog-content"><h2 data-i18n="information">Informazioni</h2><p>Aqua Tracker</p><button type="button" class="add-btn" id="closeInfo" data-i18n="close">Chiudi</button></div>
+</dialog>
 
 <script src="js/storage.js"></script>
 <script src="js/water.js"></script>

@@ -34,6 +34,13 @@ function parseDateKey(formatted) {
   return null;
 }
 
+function formatBackupDate(dateKey) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('it-IT', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+
 function validDateKey(year, month, day) {
   const date = new Date(year, month - 1, day);
   if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
@@ -56,7 +63,7 @@ function exportExcel() {
     const entries = (data[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
     entries.forEach(entry => {
       waterRows.push({
-        'Data': formatDate(date),
+        'Data': formatBackupDate(date),
         'Orario': entry.time,
         'Bicchieri': entry.qty,
         'Dimensione (ml)': entry.size,
@@ -74,7 +81,7 @@ function exportExcel() {
     const visits = (toiletData[date] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
     visits.forEach(visit => {
       toiletRows.push({
-        'Data': formatDate(date),
+        'Data': formatBackupDate(date),
         'Orario': visit.time,
         'Durata (secondi)': visit.duration === null || visit.duration === undefined ? '' : visit.duration,
       });
@@ -93,7 +100,7 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(workbook, toiletSheet, 'Bagno');
 
   XLSX.writeFile(workbook, 'acqua-backup.xlsx');
-  showToast('✅ Esportazione completata!');
+  showToast(uiPreferences.language === 'en' ? '✅ Export complete!' : '✅ Esportazione completata!');
 }
 
 function importExcel(event) {
@@ -101,14 +108,14 @@ function importExcel(event) {
   if (!file) return;
 
   if (file.size > MAX_FILE_SIZE) {
-    showToast('❌ File troppo grande (max 2MB)', 4000);
+    showToast(uiPreferences.language === 'en' ? '❌ File is too large (max 2 MB)' : '❌ File troppo grande (max 2MB)', 4000);
     event.target.value = '';
     return;
   }
 
   const extension = file.name.split('.').pop().toLowerCase();
   if (!['xlsx','xls'].includes(extension)) {
-    showToast('❌ Formato file non valido', 4000);
+    showToast(uiPreferences.language === 'en' ? '❌ Invalid file format' : '❌ Formato file non valido', 4000);
     event.target.value = '';
     return;
   }
@@ -128,7 +135,7 @@ function importExcel(event) {
         : [];
 
       if (waterRows.length + toiletRows.length > MAX_IMPORT_ROWS) {
-        showToast('❌ File con troppe righe (max 10.000)', 4000);
+        showToast(uiPreferences.language === 'en' ? '❌ File has too many rows (max 10,000)' : '❌ File con troppe righe (max 10.000)', 4000);
         return;
       }
 
@@ -143,20 +150,20 @@ function importExcel(event) {
       const imported = waterResult.imported + toiletResult.imported;
       const skipped = waterResult.skipped + toiletResult.skipped;
       if (imported > 0) {
-        showToast(`✅ Importati ${imported} record${skipped ? ` · ${skipped} ignorati` : ''}`, 4500);
+        showToast(uiPreferences.language === 'en' ? `✅ Imported ${imported} records${skipped ? ` · ${skipped} skipped` : ''}` : `✅ Importati ${imported} record${skipped ? ` · ${skipped} ignorati` : ''}`, 4500);
       } else if (skipped > 0) {
-        showToast(`⚠️ Nessun record nuovo · ${skipped} ignorati o già presenti`, 4500);
+        showToast(uiPreferences.language === 'en' ? `⚠️ No new records · ${skipped} skipped or already present` : `⚠️ Nessun record nuovo · ${skipped} ignorati o già presenti`, 4500);
       } else {
-        showToast('⚠️ Nessun dato trovato nel file', 4000);
+        showToast(uiPreferences.language === 'en' ? '⚠️ No data found in the file' : '⚠️ Nessun dato trovato nel file', 4000);
       }
     } catch (error) {
       event.target.value = '';
-      showToast('❌ Errore nella lettura del file', 4000);
+      showToast(uiPreferences.language === 'en' ? '❌ Could not read the file' : '❌ Errore nella lettura del file', 4000);
     }
   };
   reader.onerror = function() {
     event.target.value = '';
-    showToast('❌ Impossibile leggere il file', 4000);
+    showToast(uiPreferences.language === 'en' ? '❌ Could not read the file' : '❌ Impossibile leggere il file', 4000);
   };
   reader.readAsArrayBuffer(file);
 }
