@@ -3,8 +3,32 @@
 
 const STORAGE_KEY = 'water-tracker-v2-timed';
 const TOILET_STORAGE_KEY = 'toilet-tracker-v1';
+const UI_PREFERENCES_KEY = 'aqua-tracker-ui-preferences-v1';
 let data = {};
 let toiletData = {};
+let uiPreferences = { layout: 'single', language: 'it', glassCounter: false, waterSize: 200 };
+
+function loadUiPreferences() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(UI_PREFERENCES_KEY) || '{}');
+    const layout = stored && (stored.layout === 'tabs' || stored.layout === 'single') ? stored.layout : 'single';
+    const language = stored && (stored.language === 'it' || stored.language === 'en') ? stored.language : 'it';
+    const sizes = [100, 150, 200, 250, 300, 400];
+    const waterSize = stored && sizes.includes(Number(stored.waterSize)) ? Number(stored.waterSize) : 200;
+    uiPreferences = {
+      layout,
+      language,
+      glassCounter: Boolean(stored && stored.glassCounter),
+      waterSize
+    };
+  } catch {
+    uiPreferences = { layout: 'single', language: 'it', glassCounter: false, waterSize: 200 };
+  }
+}
+
+function saveUiPreferences() {
+  try { localStorage.setItem(UI_PREFERENCES_KEY, JSON.stringify(uiPreferences)); } catch {}
+}
 
 function loadData() {
   try {

@@ -1,6 +1,6 @@
 {
-  "name": "Acqua",
-  "short_name": "Acqua",
+  "name": "Aqua Tracker",
+  "short_name": "Aqua Tracker",
   "description": "Monitora la tua idratazione quotidiana",
   "start_url": "./index.html",
   "display": "standalone",
