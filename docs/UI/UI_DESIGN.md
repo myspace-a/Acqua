@@ -233,6 +233,14 @@ The selected volume should be visually highlighted.
 
 The controls should not stretch unnecessarily across the entire width of the screen.
 
+### Water note
+
+The redesigned Water input does not contain a note field.
+
+The input area should remain focused on the frequent water-registration actions: time and volume.
+
+No additional control for adding notes should be displayed.
+
 ### Remembered volume
 
 The interface should visually communicate the currently selected volume.
@@ -356,6 +364,12 @@ It must never overlap:
 
 The timeline is identified as **Water Intake** and uses the blue identity.
 
+Each individual entry displays its actual intake time and water volume.
+
+The redesign does not display separate first-intake or last-intake indicators.
+
+The timeline should therefore focus on the individual registrations rather than additional first/last summary information.
+
 ### Bathroom timeline
 
 The timeline is identified as **Bathroom Visits** and uses the green identity.
@@ -368,13 +382,17 @@ The two timelines should have a visually consistent structure while retaining th
 
 Daily statistics should be visually associated with the corresponding tracking type.
 
-### Water
+### Water statistics
 
 Uses:
 
 - Blue identity
 - Water-glass icon
 - `Total Water Intake`
+
+The statistics area should focus on the daily water total and other approved daily statistics.
+
+Separate first-intake and last-intake indicators are not part of the redesigned statistics presentation.
 
 ### Bathroom
 
