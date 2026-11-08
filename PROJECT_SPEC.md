@@ -103,7 +103,7 @@ The UI redesign requirements and reference mock-ups have been completed and appr
 
 The redesign is **not yet implemented**.
 
-The redesign is a presentation and usability project. It must preserve the existing tracking data and functionality unless a requirement in this specification explicitly changes the user interface behavior.
+The UI redesign is a presentation and usability project. It must preserve existing tracking data and core tracking functionality unless a requirement in this specification explicitly changes or removes a feature.
 
 ---
 
@@ -179,11 +179,29 @@ Each water registration records:
 - Time
 - Water volume
 - Quantity of glasses
-- Optional note, where supported by the existing application
+
+The redesigned application does not provide a note field for new water intake registrations.
+
+Existing stored water records containing notes must not be deleted or corrupted as a result of the UI redesign.
 
 The user normally records one glass at a time.
 
 Individual water registrations can be deleted without deleting other registrations.
+
+## 5.1.1 Water note compatibility
+
+The previous application supported an optional note associated with a water intake.
+
+The redesigned user interface removes the note-entry control.
+
+This is an intentional UI feature removal:
+
+- Users cannot add a new note through the redesigned interface.
+- No Settings option is provided to enable the note field.
+- Existing stored records containing notes must remain intact.
+- Existing Excel data containing notes must not be deliberately discarded during import/export solely because the redesigned UI no longer provides note entry.
+
+The redesign must not require a destructive migration of existing water records.
 
 ---
 
@@ -257,6 +275,14 @@ For the selected date, the application must provide:
 The existing water calculations must be preserved.
 
 The timeline must display the relevant information for each water registration, including time and volume.
+
+### First and last intake display
+
+The application must not display separate first-intake or last-intake indicators in the daily water timeline or daily water statistics.
+
+The individual water timeline entries must continue to display their actual intake times.
+
+The removal applies only to the separate first/last intake summary information.
 
 ---
 
