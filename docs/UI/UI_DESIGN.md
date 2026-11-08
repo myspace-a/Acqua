@@ -556,8 +556,6 @@ Expected file:
 docs/UI/mockups/mock up single-page aqua tracker.png
 ```
 
-**Note:** These filenames are proposed placeholders. The actual mock-up filenames may be changed when the images are added to the repository. The written requirements remain authoritative.
-
 ---
 
 # 20. Relationship with Project Specification
