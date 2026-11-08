@@ -177,6 +177,23 @@ The menu presents the main secondary functions:
 
 The language control should be clearly identifiable as a language-selection function.
 
+## Layout Selection
+
+The hamburger menu provides access to the user's layout preference.
+
+The user can choose between:
+
+- **Single-page**
+- **Two-tab**
+
+The selected layout should be presented as the active/current choice.
+
+Changing the selection switches the application immediately.
+
+The single-page layout is the default presentation for a new installation. The selected layout is remembered between application openings.
+
+The detailed behavioral requirements for layout selection and persistence are defined in `PROJECT_SPEC.md`.
+
 ---
 
 # 8. Date Selector
