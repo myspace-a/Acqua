@@ -521,6 +521,42 @@ Changing the selected date in either view must update the other.
 
 Switching between views must not lose or modify recorded data.
 
+### Default layout
+
+On the first opening of the application, when no layout preference has previously been saved, the application must use the **single-page layout**.
+
+### Layout selection
+
+The hamburger menu must provide the user with a way to choose between:
+
+- Single-page
+- Two-tab
+
+The layout selection is a user preference.
+
+### Switching layout
+
+When the user selects a different layout, the application must switch to that layout **immediately**, without requiring the application to be closed or reloaded.
+
+Changing the layout must not modify, delete or reset any water or bathroom tracking data.
+
+### Layout persistence
+
+The application must remember the user's last selected layout.
+
+When the application is opened again, it must restore the previously selected layout.
+
+If no layout preference exists, the application must use the single-page layout.
+
+### Storage
+
+The selected layout must be stored locally as a UI preference, separately from:
+
+- Water tracking data
+- Bathroom tracking data
+
+The layout preference must persist after closing and reopening the application and must work offline.
+
 ---
 
 ## 9.2 Visual distinction
