@@ -584,19 +584,37 @@ This document must not introduce new functional behavior that is not approved in
 
 # 21. Design Status
 
-The UI redesign design work is **approved and ready for implementation**.
+The Aqua Tracker UI redesign is **implemented, fully tested and deployed**.
 
-The following are complete:
+The approved design has been implemented as part of Aqua Tracker Release 2.
 
-- UI redesign requirements
-- Visual direction
-- Water visual identity
-- Bathroom visual identity
-- Terminology decisions
-- Language design direction
-- Layout concepts
-- Approved mock-up references
+The following design areas have been implemented:
 
-The UI redesign itself is **not yet implemented**.
+- Compact header and improved use of screen space
+- Compact date selector
+- Blue visual identity for water tracking
+- Green visual identity for bathroom tracking
+- Water-glass and toilet icons
+- Compact input controls
+- Single-page layout
+- Two-tab layout
+- Hamburger menu and layout selection
+- Water and bathroom timelines
+- Daily statistics
+- Collapsible History
+- Italian and English interface
+- Language selection and persistence
+- Remembered water-volume selection
+- Optional glass counter, hidden by default
 
-Implementation should be treated as a separate development task and must be tested against `PROJECT_SPEC.md` and this design reference.
+The implementation has been fully tested and deployed.
+
+### Release information
+
+- Project milestone: Aqua Tracker Release 2
+- GitHub Release: Release 1
+- Git tag: `v2.0-ui-redesign`
+
+The mock-ups in `docs/UI/mockups/` remain visual references for the approved design. The deployed application is the implemented version of that design.
+
+The authoritative functional requirements remain documented in `PROJECT_SPEC.md`.
