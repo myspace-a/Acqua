@@ -27,13 +27,17 @@ The application is designed primarily for mobile devices and stores tracking dat
 - Installable PWA
 - Italian and English interface
 
+
 ## Project status
 
-The core tracking functionality is complete:
+The application is fully implemented, tested and deployed.
 
 - **Phase 1 — Application foundation and water tracking:** completed
 - **Phase 2 — Bathroom visit tracking:** completed and merged into `main`
-- **UI redesign:** requirements and approved mock-ups completed; implementation not yet completed
+- **Phase 3 — UI redesign:** completed, tested and deployed
+- **Current project version:** Aqua Tracker Release 2
+- **GitHub Release:** Release 1
+- **Git tag:** `v2.0-ui-redesign`
 - **Backend:** future investigation; not currently implemented
 
 ## Technology
