@@ -73,7 +73,9 @@ Changes should avoid unnecessary refactoring or technology changes.
 | Phase 2 — Bathroom visit tracking | Completed |
 | UI redesign requirements | Approved |
 | UI redesign mock-ups | Approved |
-| UI redesign implementation | Not yet implemented |
+| UI redesign implementation | Completed |
+| UI redesign testing and validation | Completed |
+| UI redesign deployment | Completed — Release 2 |
 | Backend | Future / not defined |
 
 ### Phase 1
@@ -97,13 +99,19 @@ The completed functionality includes:
 - Duplicate prevention
 - Offline operation
 
-### Current initiative — UI redesign
+### Completed initiative — UI redesign
 
-The UI redesign requirements and reference mock-ups have been completed and approved.
+The UI redesign requirements and reference mock-ups were approved and the implementation has now been completed.
 
-The redesign is **not yet implemented**.
+The redesigned application has been fully tested and deployed.
 
-The UI redesign is a presentation and usability project. It must preserve existing tracking data and core tracking functionality unless a requirement in this specification explicitly changes or removes a feature.
+The project milestone is **Aqua Tracker Release 2**, published on GitHub as **Release 1**, using the Git tag `v2.0-ui-redesign`.
+
+The redesign preserves existing tracking data and core tracking functionality, except where an approved requirement explicitly changed or removed a feature.
+
+### Future initiative — Backend
+
+Backend investigation remains a future project activity. No backend, user account system or cloud synchronization is currently implemented.
 
 ---
 
@@ -775,7 +783,7 @@ The UI redesign should remain within the existing technical architecture.
 
 The redesign is a UI/usability initiative, not a backend initiative.
 
-Implementation must preserve existing data and functionality unless an approved requirement explicitly changes or removes a feature.
+Implementation must preserve existing tracking data and core tracking functionality unless an approved requirement explicitly changes or removes a feature.
 
 ---
 
@@ -872,25 +880,21 @@ Completed.
 
 Completed, tested and merged into `main`.
 
----
+### Phase 3 — UI Redesign
 
-## Current
+Completed, fully tested and deployed.
 
-### UI Redesign
-
-Requirements and approved visual references are complete.
-
-Implementation is the next development activity.
-
-The implementation must use:
+The implementation follows:
 
 - This specification for requirements and behavior
 - [`docs/UI/UI_DESIGN.md`](docs/UI/UI_DESIGN.md) for visual design
 - The approved mock-ups under `docs/UI/mockups/` as visual references
 
-The UI redesign must not introduce backend functionality.
+Release information:
 
----
+- Project milestone: Aqua Tracker Release 2
+- GitHub Release: Release 1
+- Git tag: `v2.0-ui-redesign`
 
 ## Future
 
@@ -944,3 +948,4 @@ The distinction is:
 - **2026-11-03:** Documentation reorganization initiated; README established as the repository introduction.
 - **2026-11-03:** UI redesign requirements and approved design decisions completed.
 - **2026-11-05:** Proposed documentation structure established with separate project specification and UI design reference. UI redesign implementation remains pending.
+- **2026-11-08:** UI redesign implementation completed, fully tested and deployed as Aqua Tracker Release 2. Published on GitHub as Release 1 with tag `v2.0-ui-redesign`.
